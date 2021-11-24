@@ -1,13 +1,13 @@
 ---
 name: 'Bug report'
-about: 'Report ice.js, components, documents and other issues'
+about: 'Report @builder/swc'
 title: ''
 labels: ''
 assignees: ''
 ---
 
 <!--
-Fusion 组件相关问题反馈请移步：https://fusion.design/feedback
+ice.js 相关问题反馈请移步：https://github.com/alibaba/ice
 -->
 
 ## What is the current behavior? 发生了什么？
@@ -21,7 +21,7 @@ If the current behavior is a bug, please provide the steps to reproduce and if p
 
 ## Any additional comments? 相关环境信息？
 
-- **ice.js Version**：
+- **@builder Version**：
 - **build.json Configuration**：
 - **Node Version**:
 - **Platform**:
