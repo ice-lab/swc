@@ -1,7 +1,6 @@
 # 忽略目录
 lib/
 build/
-tests/
 node_modules/
 
 # node 覆盖率文件

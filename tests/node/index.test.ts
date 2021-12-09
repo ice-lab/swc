@@ -18,8 +18,8 @@ describe('swc transform code', () => {
         parser: {
           syntax: 'ecmascript',
         },
-        target: 'es5'
-      }
+        target: 'es5',
+      },
     });
 
     expect(code).toEqual(`function _defineProperty(obj, key, value) {
@@ -76,7 +76,7 @@ var b = _objectSpread({
           syntax: 'typescript',
           tsx: true,
         },
-        target: 'es2021'
+        target: 'es2021',
       },
       sourceMaps: false,
     });
@@ -100,7 +100,7 @@ var b = _objectSpread({
           syntax: 'ecmascript',
           jsx: true,
         },
-        target: 'es5'
+        target: 'es5',
       },
     });
 
