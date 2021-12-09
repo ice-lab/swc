@@ -1,6 +1,6 @@
-var isKraken = true;
-var isWeex = false;
-var isWeb = true;
+const isKraken = true;
+const isWeex = false;
+const isWeb = true;
 
 if (isWeb) {
   console.log('This is web');
@@ -15,5 +15,4 @@ if (isKraken) {
 } else {
   console.log('others2');
 }
-
 
