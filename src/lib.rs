@@ -33,7 +33,7 @@ pub struct TransformOptions {
     pub keep_platform: KeepPlatformConfig,
 }
 
-pub fn custom_before_pass(name: &FileName, options: &TransformOptions) -> impl Fold {
+pub fn custom_before_pass(_name: &FileName, options: &TransformOptions) -> impl Fold {
     let mut keep_platform_config = KeepPlatformConfig::Bool(false);
     let enable_keep_platform: bool = match options.keep_platform.clone() {
         KeepPlatformConfig::KeepPlatform(platform) => {

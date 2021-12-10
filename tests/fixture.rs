@@ -33,3 +33,27 @@ fn transform_kraken_flag_fixture(input: PathBuf) {
         &output,
     );
 }
+
+#[fixture("tests/fixture/keep_platform/namespace/web/input.js")]
+fn transform_namespace_web_fixture(input: PathBuf) {
+    let output = input.parent().unwrap().join("output.js");
+    let config = KeepPlatformConfig::KeepPlatform(String::from("web"));
+    test_fixture(
+        unminify_syntax(),
+        &|_tr| keep_platform(config.clone()),
+        &input,
+        &output,
+    );
+}
+
+#[fixture("tests/fixture/keep_platform/namespace/kraken/input.js")]
+fn transform_namespace_kraken_fixture(input: PathBuf) {
+    let output = input.parent().unwrap().join("output.js");
+    let config = KeepPlatformConfig::KeepPlatform(String::from("kraken"));
+    test_fixture(
+        unminify_syntax(),
+        &|_tr| keep_platform(config.clone()),
+        &input,
+        &output,
+    );
+}
