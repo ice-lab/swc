@@ -115,8 +115,8 @@ if (isWeb) {
     });
 
     expect(code).toEqual(`var env = {
-      isWeb: true,
-    };
+    isWeb: true
+};
 if (env.isWeb) {
     console.log('This is web');
 } else if (env.isWeex) {
