@@ -110,6 +110,7 @@ impl Fold for KeepPlatformPatcher {
                                     decls.push(
                                         create_var_decl(local.clone(), Option::Some(Box::new(Expr::Object(ObjectLit {
                                             span: DUMMY_SP,
+                                            // Create object by platform_flags, such as { isWeb: true }
                                             props: platform_flags.iter().map(|platform| {
                                                 PropOrSpread::Prop(
                                                     Box::new(Prop::KeyValue(KeyValueProp {
@@ -175,6 +176,7 @@ fn insert_decls_into_module_items(decls: Vec<VarDeclarator>, module_items: &mut 
     );
 }
 
+// Create Ident by jsword
 fn create_jsword_ident(value: &str) -> Ident {
     Ident {
         span: DUMMY_SP,
@@ -198,6 +200,7 @@ fn create_var_decl(id: Ident, init: Option<Box<Expr>>) -> VarDeclarator {
     }
 }
 
+// Create bool expr, such as: true
 fn create_bool_expr(value: bool) -> Expr {
     Expr::Lit(Lit::Bool(Bool {
         value: value,
