@@ -1,6 +1,6 @@
 ## @builder/swc
 
-> swc version is 0.81.1
+>swc version is 0.95.0
 
 <img src="https://img.shields.io/npm/v/@builder/swc.svg" alt="npm package" />
 <img src="https://img.shields.io/npm/dm/@builder/swc.svg" alt="npm downloads" />
@@ -44,8 +44,9 @@ Transform the variables which exported by `universal-env` to bool. The output co
 ```js
 import { transformSync } from '@builder/swc';
 
+// Case 1: import specifier
 // Input
-const input = `
+var input = `
 import { isWeb, isWeex } from 'universal-env';
 
 if (isWeb) {
@@ -55,7 +56,7 @@ if (isWeb) {
 }
 `;
 
-const { code, map } = transformSync(input, {
+var { code, map } = transformSync(input, {
   jsc: {
     parser: {
       syntax: "ecmascript",
@@ -68,6 +69,41 @@ const { code, map } = transformSync(input, {
 /* The output code is:
 var isWeb = true;
 var isWeex = false;
+
+if (isWeb) {
+  console.log('This is web code');
+} else {
+  console.log('This is weex code');
+}
+*/
+console.log(code);
+
+// Case 2: import namespace specifier
+// Input
+var input = `
+import * as env from 'universal-env';
+
+if (env.isWeb) {
+  console.log('This is web code');
+} else {
+  console.log('This is weex code');
+}
+`;
+
+var { code, map } = transformSync(input, {
+  jsc: {
+    parser: {
+      syntax: "ecmascript",
+    },
+    transform: {},
+  },
+  keepPlatform: 'web',
+});
+
+/* The output code is:
+var env = {
+  isWeb: true
+};
 
 if (isWeb) {
   console.log('This is web code');
