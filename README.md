@@ -66,6 +66,7 @@ var { code, map } = transformSync(input, {
   keepPlatform: 'web',
 });
 
+console.log(code);
 /* The output code is:
 var isWeb = true;
 var isWeex = false;
@@ -76,7 +77,6 @@ if (isWeb) {
   console.log('This is weex code');
 }
 */
-console.log(code);
 
 // Case 2: import namespace specifier
 // Input
@@ -100,18 +100,18 @@ var { code, map } = transformSync(input, {
   keepPlatform: 'web',
 });
 
+console.log(code);
 /* The output code is:
 var env = {
   isWeb: true
 };
 
-if (isWeb) {
+if (env.isWeb) {
   console.log('This is web code');
 } else {
   console.log('This is weex code');
 }
 */
-console.log(code);
 ```
 
 #### transform(code: string, options)
