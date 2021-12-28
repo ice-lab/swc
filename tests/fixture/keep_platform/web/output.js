@@ -1,5 +1,4 @@
-var isWeex = false;
-var isWeb = true;
+var isWeb = true, isWeex = false;
 if (isWeb) {
     console.log("This is web");
 } else if (isWeex) {

@@ -2,7 +2,7 @@ use builder_swc::keep_platform::KeepPlatformConfig;
 use builder_swc::{custom_before_pass, TransformOptions};
 use serde::de::DeserializeOwned;
 use std::path::{Path, PathBuf};
-use swc::config::{OptimizerConfig, TransformConfig};
+use swc::config::{OptimizerConfig, TransformConfig, IsModule};
 use swc::Compiler;
 use swc_ecmascript::{
     parser::{Syntax, TsConfig},
@@ -50,7 +50,7 @@ fn test(input: &Path, minify: bool, platform: String) {
             let options = TransformOptions {
                 swc: swc::config::Options {
                     swcrc: true,
-                    is_module: true,
+                    is_module: IsModule::Bool(true),
                     output_path: Some(output.to_path_buf()),
 
                     config: swc::config::Config {
@@ -64,7 +64,6 @@ fn test(input: &Path, minify: bool, platform: String) {
                             },
                             syntax: Some(Syntax::Typescript(TsConfig {
                                 tsx: true,
-                                dynamic_import: true,
                                 ..Default::default()
                             })),
                             transform: Some(TransformConfig {
@@ -87,10 +86,11 @@ fn test(input: &Path, minify: bool, platform: String) {
 
             match c.process_js_with_custom_pass(
                 fm.clone(),
+                None,
                 &handler,
                 &options.swc,
-                custom_before_pass(&fm.name, &options),
-                noop(),
+                |_| custom_before_pass(&fm.name, &options),
+                |_| noop(),
             ) {
                 Ok(v) => {
                     NormalizedOutput::from(v.code)

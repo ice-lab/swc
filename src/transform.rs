@@ -49,10 +49,11 @@ impl Task for TransformTask {
                         let before_pass = custom_before_pass(&fm.name, &options);
                         self.c.process_js_with_custom_pass(
                             fm.clone(),
+                            None,
                             &handler,
                             &options.swc,
-                            before_pass,
-                            noop(),
+                            |_| before_pass,
+                            |_| noop(),
                         )
                     }
                 })
@@ -117,7 +118,7 @@ where
                 let fm =
                     op(&c, s.as_str()?.to_string(), &options).context("failed to load file")?;
                 let before_pass = custom_before_pass(&fm.name, &options);
-                c.process_js_with_custom_pass(fm, &handler, &options.swc, before_pass, noop())
+                c.process_js_with_custom_pass(fm, None, &handler, &options.swc, |_| before_pass, |_| noop())
             }
         })
     })

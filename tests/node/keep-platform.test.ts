@@ -1,7 +1,7 @@
 import { transformSync } from '../../node';
 
 describe('swc remove multiple ends code', () => {
-  it('should keep original code with not config removeMultipleEndsCode', () => {
+  it('should keep original code with not config keepPlatform', () => {
     const originalCode = `import { isWeb } from 'universal-env';
     if (isWeb) {
       console.log('This is web');
@@ -16,8 +16,8 @@ describe('swc remove multiple ends code', () => {
         parser: {
           syntax: 'ecmascript',
         },
-        target: 'es5'
-      }
+        target: 'es5',
+      },
     });
 
     expect(code).toEqual(`import { isWeb } from 'universal-env';
@@ -44,9 +44,9 @@ if (isWeb) {
         parser: {
           syntax: 'ecmascript',
         },
-        target: 'es5'
+        target: 'es5',
       },
-      keepPlatform: 'web'
+      keepPlatform: 'web',
     });
 
     expect(code).toEqual(`var isWeb = true;
@@ -74,7 +74,7 @@ if (isWeb) {
       jsc: {
         minify: {
           compress: true,
-          mangle: true
+          mangle: true,
         },
         parser: {
           syntax: 'ecmascript',
@@ -82,14 +82,48 @@ if (isWeb) {
         target: 'es5',
         transform: {
           optimizer: {
-            simplify: true
-          }
-        }
+            simplify: true,
+          },
+        },
       },
       keepPlatform: 'web',
-      minify: true
+      minify: true,
     });
 
     expect(code).toEqual('console.log("This is web")');
+  });
+
+  it('should assign env variable with import namespace', () => {
+    const originalCode = `import * as env from 'universal-env';
+    if (env.isWeb) {
+      console.log('This is web');
+    } else if (env.isWeex) {
+      console.log('This is weex');
+    } else {
+      console.log('others');
+    }`;
+
+    const { code } = transformSync(originalCode, {
+      sourceMaps: false,
+      jsc: {
+        parser: {
+          syntax: 'ecmascript',
+        },
+        target: 'es5',
+      },
+      keepPlatform: 'web',
+    });
+
+    expect(code).toEqual(`var env = {
+    isWeb: true
+};
+if (env.isWeb) {
+    console.log('This is web');
+} else if (env.isWeex) {
+    console.log('This is weex');
+} else {
+    console.log('others');
+}
+`);
   });
 });

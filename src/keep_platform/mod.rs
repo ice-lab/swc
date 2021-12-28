@@ -4,10 +4,13 @@ use std::collections::HashMap;
 use swc_common::DUMMY_SP;
 use swc_ecmascript::ast::{
     BindingIdent, Bool, Decl, Expr, Ident, ImportNamedSpecifier, ImportSpecifier, Lit, ModuleDecl,
-    ModuleItem, Pat, Stmt, VarDecl, VarDeclKind, VarDeclarator,
+    ModuleItem, Pat, Stmt, VarDecl, VarDeclKind, VarDeclarator, ImportStarAsSpecifier, ObjectLit, PropOrSpread,
+    Prop, PropName, KeyValueProp
 };
 
 use swc_ecmascript::visit::Fold;
+
+use swc_atoms::{JsWord};
 
 #[derive(Debug, Deserialize, Default, Clone)]
 pub struct KeepPlatformPatcher {
@@ -80,10 +83,14 @@ impl Fold for KeepPlatformPatcher {
         let mut new_module_items: Vec<ModuleItem> = vec![];
         // Save isWeb/isWeex into env_variables
         let mut env_variables: Vec<&Ident> = vec![];
+
+        // Decls witch need be inserted into module items
+        let mut decls: Vec<VarDeclarator>= vec![];
+
         for module_item in items.iter() {
             match module_item {
                 ModuleItem::ModuleDecl(ModuleDecl::Import(import_decl)) => {
-                    if &import_decl.src.value == "universal-env" {
+                    if check_source(&import_decl.src.value) {
                         for specifier in import_decl.specifiers.iter() {
                             match specifier {
                                 ImportSpecifier::Named(named) => {
@@ -94,6 +101,26 @@ impl Fold for KeepPlatformPatcher {
                                         is_type_only: _,
                                     } = named;
                                     env_variables.push(local);
+                                }
+                                ImportSpecifier::Namespace(namespace) => {
+                                    let ImportStarAsSpecifier {
+                                        local,
+                                        span: _,
+                                    } = namespace;
+                                    decls.push(
+                                        create_var_decl(local.clone(), Option::Some(Box::new(Expr::Object(ObjectLit {
+                                            span: DUMMY_SP,
+                                            // Create object by platform_flags, such as { isWeb: true }
+                                            props: platform_flags.iter().map(|platform| {
+                                                PropOrSpread::Prop(
+                                                    Box::new(Prop::KeyValue(KeyValueProp {
+                                                        key: PropName::Ident(create_jsword_ident(platform)),
+                                                        value: Box::new(create_bool_expr(true))
+                                                    }))
+                                                )
+                                            }).collect(),
+                                        }))))
+                                    )
                                 }
                                 _ => {}
                             }
@@ -111,30 +138,72 @@ impl Fold for KeepPlatformPatcher {
         // If it exist env variables, we need insert declare expression
         if env_variables.len() > 0 {
             for env_variable in env_variables {
-                let decs: Vec<VarDeclarator> = vec![VarDeclarator {
-                    span: DUMMY_SP,
-                    definite: false,
-                    name: Pat::Ident(BindingIdent {
-                        id: env_variable.clone(),
-                        type_ann: Default::default(),
-                    }),
-                    // Init value, such as var isWeb = true
-                    init: Option::Some(Box::new(Expr::Lit(Lit::Bool(Bool {
-                        value: platform_flags.contains(&env_variable.sym.to_string()),
-                        span: Default::default(),
-                    })))),
-                }];
-                new_module_items.insert(
-                    0,
-                    ModuleItem::Stmt(Stmt::Decl(Decl::Var(VarDecl {
-                        span: DUMMY_SP,
-                        kind: VarDeclKind::Var,
-                        declare: false,
-                        decls: decs,
-                    }))),
+                decls.push(
+                    create_var_decl(
+                        env_variable.clone(),
+                        Option::Some(
+                            Box::new(
+                                create_bool_expr(
+                                    platform_flags.contains(&env_variable.sym.to_string()))
+                                )
+                            )
+                        )
                 );
             }
         }
+
+        insert_decls_into_module_items(decls, &mut new_module_items);
+
         return new_module_items;
     }
+}
+
+// Check import source whether @uni/env or universal-env
+fn check_source(source: &str) -> bool {
+    source == "universal-env" || source == "@uni/env"
+}
+
+// Insert variable declarator into module items, exp: var isWeb = true;
+fn insert_decls_into_module_items(decls: Vec<VarDeclarator>, module_items: &mut Vec<ModuleItem>) {
+    module_items.insert(
+        0,
+        ModuleItem::Stmt(Stmt::Decl(Decl::Var(VarDecl {
+            span: DUMMY_SP,
+            kind: VarDeclKind::Var,
+            declare: false,
+            decls: decls,
+        }))),
+    );
+}
+
+// Create Ident by jsword
+fn create_jsword_ident(value: &str) -> Ident {
+    Ident {
+        span: DUMMY_SP,
+        sym: JsWord::from(value),
+        optional: Default::default()
+    }
+}
+
+// Create variable declaration
+fn create_var_decl(id: Ident, init: Option<Box<Expr>>) -> VarDeclarator {
+    let decl_name = Pat::Ident(BindingIdent {
+        id: id,
+        type_ann: Default::default(),
+    });
+
+    VarDeclarator {
+        name: decl_name,
+        init,
+        span: DUMMY_SP,
+        definite: false,
+    }
+}
+
+// Create bool expr, such as: true
+fn create_bool_expr(value: bool) -> Expr {
+    Expr::Lit(Lit::Bool(Bool {
+        value: value,
+        span: Default::default(),
+    }))
 }

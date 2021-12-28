@@ -1,19 +1,13 @@
-var isKraken = true;
-var isWeex = false;
-var isWeb = true;
-
+var isWeb = true, isWeex = false, isKraken = true;
 if (isWeb) {
-  console.log('This is web');
+    console.log("This is web");
 } else if (isWeex) {
-  console.log('This is weex');
+    console.log("This is weex");
 } else {
-  console.log('others1');
+    console.log("others1");
 }
-
 if (isKraken) {
-  console.log('This is kraken');
+    console.log("This is kraken");
 } else {
-  console.log('others2');
+    console.log("others2");
 }
-
-
