@@ -2,8 +2,8 @@
 /* eslint-disable camelcase */
 /* eslint-disable max-lines */
 export interface Binding {
-  transformSync: (src: string, isModule: boolean, options: Buffer) => Output;
-  transform: (src: string, isModule: boolean, options: Buffer) => Promise<Output>;
+  transformSync: (src: string, options: Buffer) => Output;
+  transform: (src: string, options: Buffer) => Promise<Output>;
   minifySync: (src: Buffer, options: Buffer) => Output;
   minify: (src: Buffer, options: Buffer) => Promise<Output>;
 }
