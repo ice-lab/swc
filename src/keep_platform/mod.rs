@@ -3,14 +3,14 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use swc_common::DUMMY_SP;
 use swc_ecmascript::ast::{
-    BindingIdent, Bool, Decl, Expr, Ident, ImportNamedSpecifier, ImportSpecifier, Lit, ModuleDecl,
-    ModuleItem, Pat, Stmt, VarDecl, VarDeclKind, VarDeclarator, ImportStarAsSpecifier, ObjectLit, PropOrSpread,
-    Prop, PropName, KeyValueProp
+    BindingIdent, Bool, Decl, Expr, Ident, ImportNamedSpecifier, ImportSpecifier,
+    ImportStarAsSpecifier, KeyValueProp, Lit, ModuleDecl, ModuleItem, ObjectLit, Pat, Prop,
+    PropName, PropOrSpread, Stmt, VarDecl, VarDeclKind, VarDeclarator,
 };
 
 use swc_ecmascript::visit::Fold;
 
-use swc_atoms::{JsWord};
+use swc_atoms::JsWord;
 
 #[derive(Debug, Deserialize, Default, Clone)]
 pub struct KeepPlatformPatcher {
@@ -85,7 +85,7 @@ impl Fold for KeepPlatformPatcher {
         let mut env_variables: Vec<&Ident> = vec![];
 
         // Decls witch need be inserted into module items
-        let mut decls: Vec<VarDeclarator>= vec![];
+        let mut decls: Vec<VarDeclarator> = vec![];
 
         for module_item in items.iter() {
             match module_item {
@@ -103,24 +103,27 @@ impl Fold for KeepPlatformPatcher {
                                     env_variables.push(local);
                                 }
                                 ImportSpecifier::Namespace(namespace) => {
-                                    let ImportStarAsSpecifier {
-                                        local,
-                                        span: _,
-                                    } = namespace;
-                                    decls.push(
-                                        create_var_decl(local.clone(), Option::Some(Box::new(Expr::Object(ObjectLit {
+                                    let ImportStarAsSpecifier { local, span: _ } = namespace;
+                                    decls.push(create_var_decl(
+                                        local.clone(),
+                                        Option::Some(Box::new(Expr::Object(ObjectLit {
                                             span: DUMMY_SP,
                                             // Create object by platform_flags, such as { isWeb: true }
-                                            props: platform_flags.iter().map(|platform| {
-                                                PropOrSpread::Prop(
-                                                    Box::new(Prop::KeyValue(KeyValueProp {
-                                                        key: PropName::Ident(create_jsword_ident(platform)),
-                                                        value: Box::new(create_bool_expr(true))
-                                                    }))
-                                                )
-                                            }).collect(),
-                                        }))))
-                                    )
+                                            props: platform_flags
+                                                .iter()
+                                                .map(|platform| {
+                                                    PropOrSpread::Prop(Box::new(Prop::KeyValue(
+                                                        KeyValueProp {
+                                                            key: PropName::Ident(
+                                                                create_jsword_ident(platform),
+                                                            ),
+                                                            value: Box::new(create_bool_expr(true)),
+                                                        },
+                                                    )))
+                                                })
+                                                .collect(),
+                                        }))),
+                                    ))
                                 }
                                 _ => {}
                             }
@@ -138,17 +141,12 @@ impl Fold for KeepPlatformPatcher {
         // If it exist env variables, we need insert declare expression
         if env_variables.len() > 0 {
             for env_variable in env_variables {
-                decls.push(
-                    create_var_decl(
-                        env_variable.clone(),
-                        Option::Some(
-                            Box::new(
-                                create_bool_expr(
-                                    platform_flags.contains(&env_variable.sym.to_string()))
-                                )
-                            )
-                        )
-                );
+                decls.push(create_var_decl(
+                    env_variable.clone(),
+                    Option::Some(Box::new(create_bool_expr(
+                        platform_flags.contains(&env_variable.sym.to_string()),
+                    ))),
+                ));
             }
         }
 
@@ -181,7 +179,7 @@ fn create_jsword_ident(value: &str) -> Ident {
     Ident {
         span: DUMMY_SP,
         sym: JsWord::from(value),
-        optional: Default::default()
+        optional: Default::default(),
     }
 }
 

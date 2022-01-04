@@ -2,7 +2,7 @@ use builder_swc::keep_platform::KeepPlatformConfig;
 use builder_swc::{custom_before_pass, TransformOptions};
 use serde::de::DeserializeOwned;
 use std::path::{Path, PathBuf};
-use swc::config::{OptimizerConfig, TransformConfig, IsModule};
+use swc::config::{IsModule, OptimizerConfig, TransformConfig};
 use swc::Compiler;
 use swc_ecmascript::{
     parser::{Syntax, TsConfig},

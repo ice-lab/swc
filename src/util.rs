@@ -1,7 +1,9 @@
-use anyhow::{Context, Error};
-use napi::{CallContext, JsBuffer, Status};
+use anyhow::{Context};
+use napi::Status;
 use serde::de::DeserializeOwned;
-use std::any::type_name;
+use std::{
+    any::type_name,
+};
 
 pub trait MapErr<T>: Into<Result<T, anyhow::Error>> {
     fn convert_err(self) -> napi::Result<T> {
@@ -12,45 +14,33 @@ pub trait MapErr<T>: Into<Result<T, anyhow::Error>> {
 
 impl<T> MapErr<T> for Result<T, anyhow::Error> {}
 
-pub trait CtxtExt {
-    fn get_buffer_as_string(&self, index: usize) -> napi::Result<String>;
-    /// Currently this uses JsBuffer
-    fn get_deserialized<T>(&self, index: usize) -> napi::Result<T>
-    where
-        T: DeserializeOwned;
+pub(crate) fn get_deserialized<T, B>(buffer: B) -> napi::Result<T>
+where
+    T: DeserializeOwned,
+    B: AsRef<[u8]>,
+{
+    let mut deserializer = serde_json::Deserializer::from_slice(buffer.as_ref());
+    deserializer.disable_recursion_limit();
+
+    let v = T::deserialize(&mut deserializer)
+        .with_context(|| {
+            format!(
+                "Failed to deserialize buffer as {}\nJSON: {}",
+                type_name::<T>(),
+                String::from_utf8_lossy(buffer.as_ref())
+            )
+        })
+        .convert_err()?;
+
+    Ok(v)
 }
 
-impl CtxtExt for CallContext<'_> {
-    fn get_buffer_as_string(&self, index: usize) -> napi::Result<String> {
-        let buffer = self.get::<JsBuffer>(index)?.into_value()?;
-
-        Ok(String::from_utf8_lossy(buffer.as_ref()).to_string())
-    }
-
-    fn get_deserialized<T>(&self, index: usize) -> napi::Result<T>
-    where
-        T: DeserializeOwned,
-    {
-        let buffer = self.get::<JsBuffer>(index)?.into_value()?;
-        let v = serde_json::from_slice(&buffer)
-            .with_context(|| {
-                format!(
-                    "Failed to deserialize argument at `{}` as {}\nJSON: {}",
-                    index,
-                    type_name::<T>(),
-                    String::from_utf8_lossy(&buffer)
-                )
-            })
-            .convert_err()?;
-
-        Ok(v)
-    }
-}
-
-pub(crate) fn deserialize_json<T>(s: &str) -> Result<T, Error>
+pub(crate) fn deserialize_json<T>(json: &str) -> Result<T, serde_json::Error>
 where
     T: DeserializeOwned,
 {
-    serde_json::from_str(&s)
-        .with_context(|| format!("failed to deserialize as {}\nJSON: {}", type_name::<T>(), s))
+    let mut deserializer = serde_json::Deserializer::from_str(&json);
+    deserializer.disable_recursion_limit();
+
+    T::deserialize(&mut deserializer)
 }
