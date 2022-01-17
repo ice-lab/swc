@@ -6,3 +6,10 @@ rustflags = ["-C", "link-args=-Wl,-undefined,dynamic_lookup"]
 
 [target.x86_64-linux-gnu]
 rustflags = ["-C", "link-args=-Wl,-undefined,dynamic_lookup"]
+
+[target.aarch64-unknown-linux-gnu]
+linker = "aarch64-linux-gnu-gcc"
+rustflags = [
+  "-Z",
+  "new-llvm-pass-manager=no",
+]
