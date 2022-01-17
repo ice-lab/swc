@@ -15,6 +15,7 @@ Custom swc for [ice.js](https://github.com/alibaba/ice) and [rax-app](https://gi
 - macOS x64
 - macOS aarch64
 - Linux aarch64 gnu
+- Linux x64 gnu
 
 ### API
 
