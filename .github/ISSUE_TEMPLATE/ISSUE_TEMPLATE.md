@@ -21,7 +21,7 @@ If the current behavior is a bug, please provide the steps to reproduce and if p
 
 ## Any additional comments? 相关环境信息？
 
-- **@builder Version**：
+- **@builder/swc Version**：
 - **build.json Configuration**：
 - **Node Version**:
 - **Platform**:
