@@ -10,6 +10,10 @@ rustflags = ["-C", "link-args=-Wl,-undefined,dynamic_lookup"]
 [target.aarch64-unknown-linux-gnu]
 linker = "aarch64-linux-gnu-gcc"
 rustflags = [
+  "-C",
+  "link-args=-Wl,-undefined,dynamic_lookup",
+  "-C",
+  "target-feature=+sse2",
   "-Z",
   "new-llvm-pass-manager=no",
 ]
