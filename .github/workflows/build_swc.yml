@@ -8,7 +8,7 @@ name: Build @builder/swc native binaries
 jobs:
   test-native:
     name: Unit Test Native Code
-    runs-on: ubuntu-18.04
+    runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v2
@@ -17,7 +17,7 @@ jobs:
         with:
           toolchain: nightly-2022-01-02
           profile: minimal
-      - run: cd . && cargo test
+      - run: cargo test
 
   build-native:
     strategy:
