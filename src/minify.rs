@@ -1,18 +1,21 @@
 use crate::{
-    complete_output, get_compiler,
-    util::{CtxtExt, MapErr},
+    get_compiler,
+    util::{deserialize_json, get_deserialized, MapErr},
 };
-use fxhash::FxHashMap;
-use napi::{CallContext, JsObject, Task};
+use napi::{
+    bindgen_prelude::{AbortSignal, AsyncTask, Buffer},
+    Task,
+};
+use napi_derive::napi;
 use serde::Deserialize;
 use std::sync::Arc;
-use swc::{try_with_handler, TransformOutput};
-use swc_common::{sync::Lrc, FileName, SourceFile, SourceMap};
+use swc::{config::JsMinifyOptions, TransformOutput, try_with_handler};
+use swc_common::{collections::AHashMap, sync::Lrc, FileName, SourceFile, SourceMap};
 
-struct MinifyTask {
+pub struct MinifyTask {
     c: Arc<swc::Compiler>,
-    code: MinifyTarget,
-    opts: swc::config::JsMinifyOptions,
+    code: String,
+    options: String,
 }
 
 #[derive(Deserialize)]
@@ -21,7 +24,7 @@ enum MinifyTarget {
     /// Code to minify.
     Single(String),
     /// `{ filename: code }`
-    Map(FxHashMap<String, String>),
+    Map(AHashMap<String, String>),
 }
 
 impl MinifyTarget {
@@ -32,7 +35,7 @@ impl MinifyTarget {
                 assert_eq!(
                     codes.len(),
                     1,
-                    "swc.minify does not support concatenating multiple files yet"
+                    "swc.minify does not support concatting multiple files yet"
                 );
 
                 let (filename, code) = codes.iter().next().unwrap();
@@ -43,48 +46,49 @@ impl MinifyTarget {
     }
 }
 
+#[napi]
 impl Task for MinifyTask {
     type Output = TransformOutput;
 
-    type JsValue = JsObject;
+    type JsValue = TransformOutput;
 
     fn compute(&mut self) -> napi::Result<Self::Output> {
-        try_with_handler(self.c.cm.clone(), true, |handler| {
-            let fm = self.code.to_file(self.c.cm.clone());
+        let input: MinifyTarget = deserialize_json(&self.code)?;
+        let options: JsMinifyOptions = deserialize_json(&self.options)?;
 
-            self.c.minify(fm, &handler, &self.opts)
+        try_with_handler(self.c.cm.clone(), false, |handler| {
+            let fm = input.to_file(self.c.cm.clone());
+
+            self.c.minify(fm, &handler, &options)
         })
         .convert_err()
     }
 
-    fn resolve(self, env: napi::Env, output: Self::Output) -> napi::Result<Self::JsValue> {
-        complete_output(&env, output)
+    fn resolve(&mut self, _env: napi::Env, output: Self::Output) -> napi::Result<Self::JsValue> {
+        Ok(output)
     }
 }
 
-#[js_function(2)]
-pub fn minify(cx: CallContext) -> napi::Result<JsObject> {
-    let code = cx.get_deserialized(0)?;
-    let opts = cx.get_deserialized(1)?;
+#[napi]
+pub fn minify(code: Buffer, opts: Buffer, signal: Option<AbortSignal>) -> AsyncTask<MinifyTask> {
+    let code = String::from_utf8_lossy(code.as_ref()).to_string();
+    let options = String::from_utf8_lossy(opts.as_ref()).to_string();
 
-    let c = get_compiler(&cx);
+    let c = get_compiler();
 
-    let task = MinifyTask { c, code, opts };
+    let task = MinifyTask { c, code, options };
 
-    cx.env.spawn(task).map(|t| t.promise_object())
+    AsyncTask::with_optional_signal(task, signal)
 }
 
-#[js_function(2)]
-pub fn minify_sync(cx: CallContext) -> napi::Result<JsObject> {
-    let code: MinifyTarget = cx.get_deserialized(0)?;
-    let opts = cx.get_deserialized(1)?;
+#[napi]
+pub fn minify_sync(code: Buffer, opts: Buffer) -> napi::Result<TransformOutput> {
+    let code: MinifyTarget = get_deserialized(&code)?;
+    let opts = get_deserialized(&opts)?;
 
-    let c = get_compiler(&cx);
+    let c = get_compiler();
 
     let fm = code.to_file(c.cm.clone());
 
-    let output = try_with_handler(c.cm.clone(), true, |handler| c.minify(fm, &handler, &opts))
-        .convert_err()?;
-
-    complete_output(&cx.env, output)
+    try_with_handler(c.cm.clone(), false, |handler| c.minify(fm, &handler, &opts)).convert_err()
 }

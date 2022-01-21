@@ -51,7 +51,6 @@ async function transform(src: string, options: Options): Promise<Output> {
 
   return bindings.transform(
     src,
-    false,
     toBuffer(options),
   );
 }
@@ -65,7 +64,6 @@ function transformSync(src: string, options: Options): Output {
 
   return bindings.transformSync(
     src,
-    false,
     toBuffer(options),
   );
 }

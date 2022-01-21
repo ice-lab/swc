@@ -17,6 +17,7 @@ module.exports = {
     '/node_modules/',
     '/lib/',
   ],
+  bail: 1,
   // copy from jest config
   testMatch: ['**/?(*.)+(spec|test).[jt]s?(x)'],
 };

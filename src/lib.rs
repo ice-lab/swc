@@ -1,7 +1,6 @@
 #![recursion_limit = "2048"]
 //#![deny(clippy::all)]
 
-#[macro_use]
 extern crate napi_derive;
 extern crate lazy_static;
 /// Explicit extern crate to use allocator.
@@ -9,13 +8,14 @@ extern crate swc_node_base;
 
 use backtrace::Backtrace;
 use lazy_static::lazy_static;
-use napi::{CallContext, Env, JsObject, JsUndefined};
+use napi_derive::napi;
 use serde::Deserialize;
 use std::{env, panic::set_hook, sync::Arc};
-use swc::{Compiler, TransformOutput};
+use swc::Compiler;
 use swc_common::{self, chain, pass::Optional, sync::Lazy, FileName, FilePathMapping, SourceMap};
 use swc_ecmascript::transforms::pass::noop;
 use swc_ecmascript::visit::Fold;
+use tracing_subscriber::filter::EnvFilter;
 
 use crate::keep_platform::{keep_platform, KeepPlatformConfig};
 
@@ -56,8 +56,8 @@ static COMPILER: Lazy<Arc<Compiler>> = Lazy::new(|| {
     Arc::new(Compiler::new(cm.clone()))
 });
 
-#[module_exports]
-fn init(mut exports: JsObject) -> napi::Result<()> {
+#[napi::module_init]
+fn init() {
     if cfg!(debug_assertions) || env::var("SWC_DEBUG").unwrap_or_default() == "1" {
         set_hook(Box::new(|panic_info| {
             let backtrace = Backtrace::new();
@@ -65,26 +65,37 @@ fn init(mut exports: JsObject) -> napi::Result<()> {
         }));
     }
 
-    exports.create_named_method("transform", transform::transform)?;
-    exports.create_named_method("transformSync", transform::transform_sync)?;
-    exports.create_named_method("minify", minify::minify)?;
-    exports.create_named_method("minifySync", minify::minify_sync)?;
-
-    Ok(())
+    let _ = tracing_subscriber::FmtSubscriber::builder()
+        .without_time()
+        .with_target(false)
+        .with_ansi(true)
+        .with_env_filter(EnvFilter::from_env("SWC_LOG"))
+        .try_init();
 }
 
-fn get_compiler(_ctx: &CallContext) -> Arc<Compiler> {
+pub fn get_compiler() -> Arc<Compiler> {
     COMPILER.clone()
 }
 
-#[js_function]
-fn construct_compiler(ctx: CallContext) -> napi::Result<JsUndefined> {
-    // TODO: Assign swc::Compiler
-    ctx.env.get_undefined()
+#[napi(js_name = "Compiler")]
+pub struct JsCompiler {
+    _compiler: Arc<Compiler>,
 }
 
-pub fn complete_output(env: &Env, output: TransformOutput) -> napi::Result<JsObject> {
-    env.to_js_value(&output)?.coerce_to_object()
+#[napi]
+impl JsCompiler {
+    #[napi(constructor)]
+    pub fn new() -> Self {
+        Self {
+            _compiler: COMPILER.clone(),
+        }
+    }
 }
 
 pub type ArcCompiler = Arc<Compiler>;
+
+#[napi(object)]
+pub struct TransformOutput {
+    pub code: String,
+    pub map: Option<String>,
+}
