@@ -18,8 +18,6 @@ const PlatformName = platform();
  * `loadBinding` helper will load `swc.[PLATFORM].node` from `__dirname` first
  * If failed to load addon, it will fallback to load from `swc-[PLATFORM]`
  */
-const bindings: Binding = loadBinding();
-
 function loadBinding() {
   const triples = platformArchTriples[PlatformName][ArchName];
   for (const triple of triples) {
@@ -49,7 +47,7 @@ async function transform(src: string, options: Options): Promise<Output> {
     options.jsc.parser.syntax = options.jsc.parser.syntax ?? 'ecmascript';
   }
 
-  return bindings.transform(
+  return loadBinding().transform(
     src,
     false,
     toBuffer(options),
@@ -63,7 +61,7 @@ function transformSync(src: string, options: Options): Output {
     options.jsc.parser.syntax = options.jsc.parser.syntax ?? 'ecmascript';
   }
 
-  return bindings.transformSync(
+  return loadBinding().transformSync(
     src,
     false,
     toBuffer(options),
@@ -75,11 +73,11 @@ function toBuffer(t) {
 }
 
 async function minify(src: string, opts: JsMinifyOptions): Promise<Output> {
-  return bindings.minify(toBuffer(src), toBuffer(opts ?? {}));
+  return loadBinding().minify(toBuffer(src), toBuffer(opts ?? {}));
 }
 
 function minifySync(src: string, opts: JsMinifyOptions): Output {
-  return bindings.minifySync(toBuffer(src), toBuffer(opts ?? {}));
+  return loadBinding().minifySync(toBuffer(src), toBuffer(opts ?? {}));
 }
 
 export * from './types';
