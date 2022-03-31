@@ -1,3 +1,3 @@
-const { getCommitlintConfig } = require('@appworks/spec');
+const { getCommitlintConfig } = require('@applint/spec');
 
 module.exports = getCommitlintConfig('common');
