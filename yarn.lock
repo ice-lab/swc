@@ -551,6 +551,11 @@
   resolved "https://registry.yarnpkg.com/@builder/swc-darwin-x64/-/swc-darwin-x64-0.1.3.tgz#226edb5cc74e74b483676dbd9be9705707e13644"
   integrity sha512-SC4Mj1/nMurpDfT6TgydhfyOEraC77e6wYXpp6X+TbujYYXAXuDgTj682llNOfl79cU2ouBMk0flnGt37td7aA==
 
+"@builder/swc-linux-arm64-gnu@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.npm.alibaba-inc.com/@builder/swc-linux-arm64-gnu/download/@builder/swc-linux-arm64-gnu-0.1.0.tgz#0df1afb10a2cc21e7ed039e75e2a3d89d99bfcbc"
+  integrity sha512-FFExOKTE1MjyYI9zQqu1zRHdqCoIIaKGYR11O2mauG1czLOKL16JOUdhEcq6OkjdmwEbjXH8/6onCoeC8j3vag==
+
 "@builder/swc-linux-x64-gnu@^0.1.0":
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/@builder/swc-linux-x64-gnu/-/swc-linux-x64-gnu-0.1.3.tgz#00dfa9d1574566d965492ddc98342becda813ff6"
@@ -2309,9 +2314,9 @@ flatted@^3.1.0:
   integrity sha512-8/sOawo8tJ4QOBX8YlQBMxL8+RLZfxMQOif9o0KUKTNTjMYElWPE0r/m5VNFxTRd0NSw8qSy8dajrwX4RYI1Hw==
 
 follow-redirects@^1.14.4:
-  version "1.14.5"
-  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.5.tgz#f09a5848981d3c772b5392309778523f8d85c381"
-  integrity sha512-wtphSXy7d4/OR+MvIFbCVBDzZ5520qV8XfPklSN5QtxuMUJZ+b0Wnst1e1lCDocfzuCkHqj8k0FpZqO+UIaKNA==
+  version "1.14.8"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.8.tgz#016996fb9a11a100566398b1c6839337d7bfa8fc"
+  integrity sha512-1x0S9UVJHsQprFcEC/qnNzBLcIxsjAV905f/UkQxbclCsoTWlacCNOpQa/anodLl2uaEKFhfWOvM2Qg77+15zA==
 
 form-data@^3.0.0:
   version "3.0.1"
