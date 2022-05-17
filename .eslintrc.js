@@ -1,4 +1,4 @@
-const { getESLintConfig } = require('@appworks/spec');
+const { getESLintConfig } = require('@applint/spec');
 
 // https://www.npmjs.com/package/@iceworks/spec
 module.exports = getESLintConfig('common-ts', {
