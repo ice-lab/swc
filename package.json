@@ -20,7 +20,7 @@
     "setup": "rm -rf node_modules && yarn install && npm run build",
     "watch": "npm run clean && npx tsc --build ./tsconfig.json -w",
     "build": "npm run clean && npx tsc --build ./tsconfig.json",
-    "build:swc": "npm run clean:swc && napi build --platform --release --cargo-cwd ./ ./native --js=false",
+    "build:swc": "napi build --platform --release --cargo-cwd ./ ./native --js=false",
     "version": "napi version -p ./npm -c ./package.json",
     "publish": "npm run copy:swc && ts-node ./scripts/publish-package.ts",
     "publish:beta": "npm run copy:swc && PUBLISH_TYPE=beta ts-node ./scripts/publishPackageWithDistTag.ts",
