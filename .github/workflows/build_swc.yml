@@ -20,7 +20,7 @@ jobs:
             target: 'x86_64-apple-darwin'
             build: |
               npm i -g "@napi-rs/cli@${NAPI_CLI_VERSION}"
-              npm run build:swc
+              npm run build:swc &&
               strip -x ./native/builder-swc.*.node
           - host: windows-latest
             build: |
@@ -42,7 +42,7 @@ jobs:
               rustup default "${RUST_TOOLCHAIN}" &&
               rustup target add x86_64-unknown-linux-gnu &&
               npm i -g "@napi-rs/cli@${NAPI_CLI_VERSION}" &&
-              npm run build:swc -- --release --target x86_64-unknown-linux-gnu
+              npm run build:swc -- --target x86_64-unknown-linux-gnu &&
               llvm-strip -x ./native/builder-swc.*.node
           - host: ubuntu-latest
             target: 'x86_64-unknown-linux-musl'
@@ -53,7 +53,7 @@ jobs:
               rustup default "${RUST_TOOLCHAIN}" &&
               rustup target add x86_64-unknown-linux-musl &&
               npm i -g "@napi-rs/cli@${NAPI_CLI_VERSION}" &&
-              npm run build:swc -- --release --target x86_64-unknown-linux-musl
+              npm run build:swc -- --target x86_64-unknown-linux-musl &&
               strip -x ./native/builder-swc.*.node
           - host: macos-latest
             target: 'aarch64-apple-darwin'
@@ -64,7 +64,7 @@ jobs:
               SYSROOT=$(xcrun --sdk macosx --show-sdk-path);
               export CFLAGS="-isysroot $SYSROOT -isystem $SYSROOT";
               npm i -g "@napi-rs/cli@${NAPI_CLI_VERSION}" &&
-              npm run build:swc -- --release --target aarch64-apple-darwin
+              npm run build:swc -- --target aarch64-apple-darwin &&
               strip -x ./native/builder-swc.*.node
           - host: ubuntu-latest
             target: 'aarch64-unknown-linux-gnu'
@@ -75,7 +75,7 @@ jobs:
               rustup default "${RUST_TOOLCHAIN}" &&
               rustup target add aarch64-unknown-linux-gnu &&
               npm i -g "@napi-rs/cli@${NAPI_CLI_VERSION}" &&
-              npm run build:swc -- --release --target aarch64-unknown-linux-gnu &&
+              npm run build:swc -- --target aarch64-unknown-linux-gnu &&
               llvm-strip -x ./native/builder-swc.*.node
           - host: ubuntu-latest
             target: 'aarch64-unknown-linux-musl'
@@ -86,13 +86,13 @@ jobs:
               rustup toolchain install "${RUST_TOOLCHAIN}" &&
               rustup default "${RUST_TOOLCHAIN}" &&
               rustup target add aarch64-unknown-linux-musl &&
-              npm run build:swc -- --release --target aarch64-unknown-linux-musl &&
+              npm run build:swc -- --target aarch64-unknown-linux-musl &&
               llvm-strip -x ./native/builder-swc.*.node
           - host: windows-latest
             target: 'aarch64-pc-windows-msvc'
             build: |
               npm i -g "@napi-rs/cli@${NAPI_CLI_VERSION}" &&
-              npm run build:swc -- --release --target aarch64-pc-windows-msvc
+              npm run build:swc -- --target aarch64-pc-windows-msvc
     name: stable - ${{ matrix.settings.target }} - node@16
     runs-on: ${{ matrix.settings.host }}
     steps:
