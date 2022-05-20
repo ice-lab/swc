@@ -5,9 +5,6 @@ on:
 
 name: Build @builder/swc native binaries
 
-env:
-  RUST_TOOLCHAIN: nightly-2022-04-12
-
 jobs:
   # Build binaries for publishing
   build-native:
@@ -132,7 +129,6 @@ jobs:
         with:
           profile: minimal
           override: true
-          toolchain: ${{ env.RUST_TOOLCHAIN }}
           target: ${{ matrix.settings.target }}
 
       - name: Cache cargo registry
@@ -157,7 +153,7 @@ jobs:
         if: ${{ matrix.settings.docker }}
         with:
           image: ${{ matrix.settings.docker }}
-          options: -e RUST_TOOLCHAIN=${{ env.RUST_TOOLCHAIN }} -e NAPI_CLI_VERSION=${{ env.NAPI_CLI_VERSION }} -v ${{ env.HOME }}/.cargo/git:/root/.cargo/git -v ${{ env.HOME }}/.cargo/registry:/root/.cargo/registry -v ${{ github.workspace }}:/build -w /build
+          options: -v ${{ env.HOME }}/.cargo/git:/root/.cargo/git -v ${{ env.HOME }}/.cargo/registry:/root/.cargo/registry -v ${{ github.workspace }}:/build -w /build
           run: ${{ matrix.settings.build }}
 
       - name: 'Build'
