@@ -1,17 +1,44 @@
-[target.x86_64-apple-darwin]
-rustflags = ["-C", "link-args=-Wl,-undefined,dynamic_lookup"]
+[build]
+
+rustdocflags = []
+rustflags = [
+  "-Z",
+  "new-llvm-pass-manager=no",
+]
 
 [target.aarch64-apple-darwin]
-rustflags = ["-C", "link-args=-Wl,-undefined,dynamic_lookup"]
-
-[target.x86_64-linux-gnu]
-rustflags = ["-C", "link-args=-Wl,-undefined,dynamic_lookup"]
+rustflags = [
+  "-Z",
+  "new-llvm-pass-manager=no",
+]
 
 [target.aarch64-unknown-linux-gnu]
 linker = "aarch64-linux-gnu-gcc"
 rustflags = [
+  "-Z",
+  "new-llvm-pass-manager=no",
+]
+
+[target.aarch64-unknown-linux-musl]
+linker = "aarch64-linux-musl-gcc"
+rustflags = [
   "-C",
-  "link-args=-Wl,-undefined,dynamic_lookup",
+  "target-feature=-crt-static",
+  "-C",
+  "link-arg=-lgcc",
+  "-Z",
+  "new-llvm-pass-manager=no",
+]
+
+[target.armv7-unknown-linux-gnueabihf]
+linker = "arm-linux-gnueabihf-gcc"
+rustflags = [
+  "-Z",
+  "new-llvm-pass-manager=no",
+]
+
+[target.aarch64-pc-windows-msvc]
+rustflags = [
   "-Z",
   "new-llvm-pass-manager=no",
 ]
