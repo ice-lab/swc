@@ -13,6 +13,7 @@ Custom swc for [ice.js](https://github.com/alibaba/ice) and [rax-app](https://gi
 
 - Windows x64
 - Windows aarch64
+- Window ia32
 - macOS x64
 - macOS aarch64
 - Linux aarch64 gnu
