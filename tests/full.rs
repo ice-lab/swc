@@ -68,14 +68,14 @@ fn test(input: &Path, minify: bool, platform: String) {
                             })),
                             transform: Some(TransformConfig {
                                 optimizer: Some(OptimizerConfig {
-                                    simplify: minify,
+                                    simplify: minify.into(),
                                     ..Default::default()
                                 }),
                                 ..Default::default()
-                            }),
+                            }).into(),
                             ..Default::default()
                         },
-                        minify: minify,
+                        minify: minify.into(),
                         ..Default::default()
                     },
                     ..Default::default()
@@ -89,8 +89,8 @@ fn test(input: &Path, minify: bool, platform: String) {
                 None,
                 &handler,
                 &options.swc,
-                |_| custom_before_pass(&fm.name, &options),
-                |_| noop(),
+                |_, _| custom_before_pass(&fm.name, &options),
+                |_, _| noop(),
             ) {
                 Ok(v) => {
                     NormalizedOutput::from(v.code)

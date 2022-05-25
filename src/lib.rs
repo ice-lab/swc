@@ -11,12 +11,11 @@ use lazy_static::lazy_static;
 use napi_derive::napi;
 use serde::Deserialize;
 use std::{env, panic::set_hook, sync::Arc};
-use swc::Compiler;
+use swc::{Compiler};
 use swc_common::{self, chain, pass::Optional, sync::Lazy, FileName, FilePathMapping, SourceMap};
 use swc_ecmascript::transforms::pass::noop;
 use swc_ecmascript::visit::Fold;
 use tracing_subscriber::filter::EnvFilter;
-
 use crate::keep_platform::{keep_platform, KeepPlatformConfig};
 
 pub mod keep_platform;
@@ -85,6 +84,7 @@ pub struct JsCompiler {
 #[napi]
 impl JsCompiler {
     #[napi(constructor)]
+    #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
         Self {
             _compiler: COMPILER.clone(),

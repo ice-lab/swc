@@ -1,6 +1,3 @@
-import regeneratorRuntime from "regenerator-runtime";
-import fs from 'fs';
-import other from 'other';
 function _arrayLikeToArray(arr, len) {
     if (len == null || len > arr.length) len = arr.length;
     for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
@@ -87,6 +84,9 @@ function _unsupportedIterableToArray(o, minLen) {
     if (n === "Map" || n === "Set") return Array.from(n);
     if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
 }
+import regeneratorRuntime from "regenerator-runtime";
+import fs from "fs";
+import other from "other";
 var _promises = _toArray(fs.promises), a = _promises[0], b = _promises[1], rest = _promises.slice(2);
 var _other = _slicedToArray(other, 2), foo = _other[0], bar = _other[1];
 export function getStaticProps() {
@@ -114,5 +114,5 @@ var Foo = function Foo() {
     _classCallCheck(this, Foo);
 };
 export default function Home() {
-    return(/*#__PURE__*/ React.createElement("div", null));
+    return /*#__PURE__*/ React.createElement("div", null);
 };

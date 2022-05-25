@@ -3,9 +3,9 @@ var env = {
 };
 
 if (env.isWeb) {
-    console.log("This is web");
+    console.log('This is web');
 } else if (env.isWeex) {
-    console.log("This is weex");
+    console.log('This is weex');
 } else {
-    console.log("others");
+    console.log('others');
 }
