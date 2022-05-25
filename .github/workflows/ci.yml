@@ -30,21 +30,17 @@ jobs:
     name: stable - ${{ matrix.settings.target }} - node@12
     runs-on: ${{ matrix.settings.host }}
     steps:
+      - uses: actions/checkout@v2
+      - name: Set branch name
+        run: echo >>$GITHUB_ENV BRANCH_NAME=${GITHUB_REF#refs/heads/}
+      - name: Echo branch name
+        run: echo ${BRANCH_NAME}
       - uses: actions/checkout@v3
       - name: Setup node
         uses: actions/setup-node@v3
         with:
           node-version: 12
-          check-latest: true
+          registry-url: https://registry.npmjs.org/
 
-      - name: Install
-        run: yarn
-        with:
-          profile: minimal
-          override: true
-          target: ${{ matrix.settings.target }}
-
-      - name: 'CI'
-        run: npm run test
-        shell: bash
-
+      - run: npm run setup
+      - run: npm run ci
