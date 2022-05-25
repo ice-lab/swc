@@ -20,11 +20,11 @@ describe('swc remove multiple ends code', () => {
       },
     });
 
-    expect(code).toEqual(`import { isWeb } from 'universal-env';
+    expect(code).toEqual(`import { isWeb } from "universal-env";
 if (isWeb) {
-    console.log('This is web');
+    console.log("This is web");
 } else {
-    console.log('This is others');
+    console.log("This is others");
 }
 `);
   });
@@ -51,9 +51,9 @@ if (isWeb) {
 
     expect(code).toEqual(`var isWeb = true;
 if (isWeb) {
-    console.log('This is web');
+    console.log("This is web");
 } else {
-    console.log('This is others');
+    console.log("This is others");
 }
 `);
   });
@@ -94,13 +94,13 @@ if (isWeb) {
   });
 
   it('should assign env variable with import namespace', () => {
-    const originalCode = `import * as env from 'universal-env';
+    const originalCode = `import * as env from "universal-env";
     if (env.isWeb) {
-      console.log('This is web');
+      console.log("This is web");
     } else if (env.isWeex) {
-      console.log('This is weex');
+      console.log("This is weex");
     } else {
-      console.log('others');
+      console.log("others");
     }`;
 
     const { code } = transformSync(originalCode, {
@@ -118,11 +118,11 @@ if (isWeb) {
     isWeb: true
 };
 if (env.isWeb) {
-    console.log('This is web');
+    console.log("This is web");
 } else if (env.isWeex) {
-    console.log('This is weex');
+    console.log("This is weex");
 } else {
-    console.log('others');
+    console.log("others");
 }
 `);
   });

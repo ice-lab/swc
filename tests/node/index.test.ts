@@ -103,9 +103,9 @@ var b = _objectSpread({
       },
     });
 
-    expect(code).toEqual(`import React from 'react';
+    expect(code).toEqual(`import React from "react";
 export default function Home() {
-    return(/*#__PURE__*/ React.createElement("div", null, "home page"));
+    return /*#__PURE__*/ React.createElement("div", null, "home page");
 };
 `);
   });

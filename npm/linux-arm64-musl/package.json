@@ -1,18 +1,18 @@
 {
-  "name": "@builder/swc-linux-x64-gnu",
+  "name": "@builder/swc-linux-arm64-musl",
   "version": "0.1.4",
   "os": [
     "linux"
   ],
   "cpu": [
-    "x64"
+    "arm64"
   ],
   "libc": [
-    "glibc"
+    "musl"
   ],
-  "main": "builder-swc.linux-x64-gnu.node",
+  "main": "builder-swc.linux-arm64-musl.node",
   "files": [
-    "builder-swc.linux-x64-gnu.node"
+    "builder-swc.linux-arm64-musl.node"
   ],
   "license": "MIT",
   "engines": {

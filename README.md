@@ -1,6 +1,6 @@
 ## @builder/swc
 
->swc version is 0.115.0
+>swc version is 0.180.0
 
 <img src="https://img.shields.io/npm/v/@builder/swc.svg" alt="npm package" />
 <img src="https://img.shields.io/npm/dm/@builder/swc.svg" alt="npm downloads" />
@@ -12,10 +12,13 @@ Custom swc for [ice.js](https://github.com/alibaba/ice) and [rax-app](https://gi
 ### Platform Support
 
 - Windows x64
+- Windows aarch64
 - macOS x64
 - macOS aarch64
 - Linux aarch64 gnu
+- Linux aarch64 musl
 - Linux x64 gnu
+- Linux x64 musl
 
 ### API
 
