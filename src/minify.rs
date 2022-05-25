@@ -1,6 +1,7 @@
 use crate::{
     get_compiler,
-    util::{deserialize_json, get_deserialized, MapErr},
+    util::{deserialize_json, get_deserialized, try_with, format_output},
+    TransformOutput
 };
 use napi::{
     bindgen_prelude::{AbortSignal, AsyncTask, Buffer},
@@ -9,7 +10,7 @@ use napi::{
 use napi_derive::napi;
 use serde::Deserialize;
 use std::sync::Arc;
-use swc::{config::JsMinifyOptions, TransformOutput, try_with_handler};
+use swc::{config::JsMinifyOptions};
 use swc_common::{collections::AHashMap, sync::Lrc, FileName, SourceFile, SourceMap};
 
 pub struct MinifyTask {
@@ -56,12 +57,13 @@ impl Task for MinifyTask {
         let input: MinifyTarget = deserialize_json(&self.code)?;
         let options: JsMinifyOptions = deserialize_json(&self.options)?;
 
-        try_with_handler(self.c.cm.clone(), false, |handler| {
+        let result = try_with(self.c.cm.clone(), |handler| {
             let fm = input.to_file(self.c.cm.clone());
 
             self.c.minify(fm, &handler, &options)
-        })
-        .convert_err()
+        });
+
+        format_output(result)
     }
 
     fn resolve(&mut self, _env: napi::Env, output: Self::Output) -> napi::Result<Self::JsValue> {
@@ -90,5 +92,7 @@ pub fn minify_sync(code: Buffer, opts: Buffer) -> napi::Result<TransformOutput> 
 
     let fm = code.to_file(c.cm.clone());
 
-    try_with_handler(c.cm.clone(), false, |handler| c.minify(fm, &handler, &opts)).convert_err()
+    let result = try_with(c.cm.clone(), |handler| c.minify(fm, &handler, &opts));
+
+    format_output(result)
 }

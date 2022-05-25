@@ -1,16 +1,17 @@
 use crate::{
     custom_before_pass, get_compiler,
-    util::{deserialize_json, get_deserialized, MapErr},
+    util::{get_deserialized, try_with, format_output},
     TransformOptions,
+    TransformOutput,
 };
 use napi::{
     bindgen_prelude::{AbortSignal, AsyncTask, Buffer},
-    Env, Task,
+    Env, Task, JsBufferValue, Ref, JsBuffer
 };
 use napi_derive::napi;
 use std::{path::Path, sync::Arc};
-use swc::{try_with_handler, Compiler, TransformOutput};
-use swc_common::FileName;
+use swc::{Compiler};
+use swc_common::{FileName};
 use swc_ecmascript::transforms::pass::noop;
 
 /// Input to transform
@@ -23,23 +24,22 @@ pub enum Input {
 pub struct TransformTask {
     pub c: Arc<Compiler>,
     pub input: Input,
-    pub options: String,
+    pub options: Ref<JsBufferValue>,
 }
 
 #[napi]
 impl Task for TransformTask {
-    type Output = TransformOutput;
     type JsValue = TransformOutput;
+    type Output = TransformOutput;
 
     fn compute(&mut self) -> napi::Result<Self::Output> {
-        let mut options: TransformOptions = deserialize_json(&self.options)?;
+        let mut options: TransformOptions = serde_json::from_slice(self.options.as_ref())?;
         if !options.swc.filename.is_empty() {
             options.swc.config.adjust(Path::new(&options.swc.filename));
         }
 
-        try_with_handler(
+        let result = try_with(
             self.c.cm.clone(),
-            !options.swc.config.error.filename,
             |handler| {
                 self.c.run(|| match &self.input {
                     Input::Source { src } => {
@@ -52,46 +52,55 @@ impl Task for TransformTask {
                             src.to_string(),
                         );
 
-                        let before_pass = custom_before_pass(&fm.name, &options);
+                        let file = fm.clone();
+
                         self.c.process_js_with_custom_pass(
-                            fm.clone(),
+                            file,
                             None,
-                            &handler,
+                            handler,
                             &options.swc,
-                            |_| before_pass,
-                            |_| noop(),
+                            |_, _| {
+                                custom_before_pass(
+                                    &fm.name,
+                                    &options
+                                )
+                            } ,
+                            |_, _| noop(),
                         )
                     }
                 })
             },
-        )
-        .convert_err()
+        );
+
+        format_output(result)
     }
 
     fn resolve(&mut self, _env: Env, result: Self::Output) -> napi::Result<Self::JsValue> {
         Ok(result)
+    }
+    fn finally(&mut self, _env: Env) -> napi::Result<()> {
+        Ok(())
     }
 }
 
 #[napi]
 pub fn transform(
     src: String,
-    options: Buffer,
+    options: JsBuffer,
     signal: Option<AbortSignal>,
 ) -> napi::Result<AsyncTask<TransformTask>> {
     let c = get_compiler();
-
-    let options = String::from_utf8_lossy(options.as_ref()).to_string();
 
     let input = Input::Source { src };
 
     let task = TransformTask {
         c: c.clone(),
         input,
-        options,
+        options: options.into_ref()?,
     };
     Ok(AsyncTask::with_optional_signal(task, signal))
 }
+
 
 #[napi]
 pub fn transform_sync(s: String, opts: Buffer) -> napi::Result<TransformOutput> {
@@ -103,9 +112,8 @@ pub fn transform_sync(s: String, opts: Buffer) -> napi::Result<TransformOutput> 
         options.swc.config.adjust(Path::new(&options.swc.filename));
     }
 
-    try_with_handler(
+    let res = try_with(
         c.cm.clone(),
-        !options.swc.config.error.filename,
         |handler| {
             c.run(|| {
                 let fm = c.cm.new_source_file(
@@ -122,13 +130,14 @@ pub fn transform_sync(s: String, opts: Buffer) -> napi::Result<TransformOutput> 
                     None,
                     &handler,
                     &options.swc,
-                    |_| before_pass,
-                    |_| noop(),
+                    |_, _| before_pass,
+                    |_, _| noop(),
                 )
             })
         },
-    )
-    .convert_err()
+    );
+
+    format_output(res)
 }
 
 #[test]

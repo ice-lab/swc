@@ -1,3 +1,3 @@
-# `swc-win32-x64-msvc`
+# `@builder/swc-win32-x64-msvc`
 
-This is the **x86_64-pc-windows-msvc** binary for `swc`
+This is the **win32-x64-msvc** binary for `@builder/swc`
