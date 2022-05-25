@@ -78,6 +78,7 @@
     "@builder/swc-linux-x64-gnu": "0.1.4",
     "@builder/swc-linux-x64-musl": "0.1.4",
     "@builder/swc-win32-arm64-msvc": "0.1.4",
+    "@builder/swc-win32-ia32-msvc": "0.1.4",
     "@builder/swc-win32-x64-msvc": "0.1.4"
   }
 }
