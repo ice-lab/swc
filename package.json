@@ -2,6 +2,10 @@
   "name": "@builder/swc",
   "version": "0.1.4",
   "main": "lib/index.js",
+  "private": true,
+  "workspaces": [
+    "./*"
+  ],
   "napi": {
     "name": "builder-swc",
     "triples": {
