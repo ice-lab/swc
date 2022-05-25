@@ -17,7 +17,7 @@ jobs:
             build: |
               yarn
               yarn run build:swc &&
-              strip -x ./native/builder-swc.*.node
+              strip -x ./native/builder-swc.darwin-x64.node
           - host: windows-latest
             build: |
               yarn &&
@@ -26,7 +26,7 @@ jobs:
           - host: windows-latest
             build: |
               yarn &&
-              yarn run build:swc
+              yarn run build:swc --target i686-pc-windows-msvc
             target: 'i686-pc-windows-msvc'
           - host: ubuntu-latest
             target: 'x86_64-unknown-linux-gnu'
@@ -37,7 +37,7 @@ jobs:
               rustup target add x86_64-unknown-linux-gnu &&
               yarn &&
               yarn run build:swc --target x86_64-unknown-linux-gnu &&
-              llvm-strip -x ./native/builder-swc.*.node
+              llvm-strip -x ./native/builder-swc.linux-x64-gnu.node
           - host: ubuntu-latest
             target: 'x86_64-unknown-linux-musl'
             docker: ghcr.io/napi-rs/napi-rs/nodejs-rust:lts-debian
@@ -46,7 +46,7 @@ jobs:
               rustup target add x86_64-unknown-linux-musl &&
               yarn &&
               yarn run build:swc --target x86_64-unknown-linux-musl &&
-              strip -x ./native/builder-swc.*.node
+              strip -x ./native/builder-swc.linux-x64-musl.node
           - host: macos-latest
             target: 'aarch64-apple-darwin'
             build: |
@@ -57,7 +57,7 @@ jobs:
               export CFLAGS="-isysroot $SYSROOT -isystem $SYSROOT";
               yarn &&
               yarn run build:swc --target aarch64-apple-darwin &&
-              strip -x ./native/builder-swc.*.node
+              strip -x ./native/builder-swc.darwin-arm64.node
           - host: ubuntu-latest
             target: 'aarch64-unknown-linux-gnu'
             docker: ghcr.io/napi-rs/napi-rs/nodejs-rust:lts-debian-aarch64
@@ -66,7 +66,7 @@ jobs:
               rustup target add aarch64-unknown-linux-gnu &&
               yarn &&
               yarn run build:swc --target aarch64-unknown-linux-gnu &&
-              llvm-strip -x ./native/builder-swc.*.node
+              llvm-strip -x ./native/builder-swc.linux-arm64-gnu.node
           - host: ubuntu-latest
             target: 'aarch64-unknown-linux-musl'
             docker: ghcr.io/napi-rs/napi-rs/nodejs-rust:lts-alpine
@@ -75,7 +75,7 @@ jobs:
               rustup target add aarch64-unknown-linux-musl &&
               yarn &&
               env RUSTFLAGS='-C target-feature=-crt-static -Z new-llvm-pass-manager=no' yarn run build:swc --target aarch64-unknown-linux-musl &&
-              llvm-strip -x ./native/builder-swc.*.node
+              llvm-strip -x ./native/builder-swc.linux-arm64-musl.node
           - host: windows-latest
             target: 'aarch64-pc-windows-msvc'
             build: |
