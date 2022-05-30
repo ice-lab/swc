@@ -35,6 +35,7 @@
     "copy:swc": "ts-node ./scripts/copySwcBinaries.ts",
     "clean": "rimraf ./lib",
     "clean:swc": "rimraf ./native",
+    "clean:binary": "rimraf",
     "lint": "eslint --cache --ext .js,.jsx,.ts,.tsx ./",
     "lint:fix": "npm run lint -- --fix",
     "test": "jest --forceExit --ci",
