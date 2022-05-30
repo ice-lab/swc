@@ -4,7 +4,8 @@
   "main": "lib/index.js",
   "private": true,
   "workspaces": [
-    "./**"
+    "./npm/*",
+    "./*"
   ],
   "napi": {
     "name": "builder-swc",
@@ -30,7 +31,7 @@
     "build": "npm run clean && npx tsc --build ./tsconfig.json",
     "build:swc": "napi build --platform --release --cargo-cwd ./ ./native --js=false",
     "version": "napi version -p ./npm -c ./package.json",
-    "publish": "npm run copy:swc && ts-node ./scripts/publish-package.ts",
+    "publish": "npm run copy:swc && ts-node ./scripts/publishPackage.ts",
     "publish:beta": "npm run copy:swc && PUBLISH_TYPE=beta ts-node ./scripts/publishPackageWithDistTag.ts",
     "copy:swc": "ts-node ./scripts/copySwcBinaries.ts",
     "clean": "rimraf ./lib",
