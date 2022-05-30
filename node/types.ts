@@ -334,6 +334,7 @@ export interface Options extends Config {
    */
   outputPath?: string;
   keepPlatform?: string;
+  removeExportExprs?: string[];
 }
 
 export interface CallerOptions {

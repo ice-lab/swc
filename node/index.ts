@@ -5,7 +5,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { platform, arch } from 'os';
 import { platformArchTriples } from '@napi-rs/triples';
-import { Options, JsMinifyOptions, Output, Binding } from './types';
+import { Options, JsMinifyOptions, Output } from './types';
 
 const ArchName = arch();
 const PlatformName = platform();
