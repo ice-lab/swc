@@ -34,7 +34,7 @@ function loadBinding() {
     try {
       return require(`@builder/swc-${triple.platformArchABI}`);
     // eslint-disable-next-line no-empty
-    } catch (e) {}
+    } catch (error) {}
   }
 
   throw new Error('Cannot find target @builder/swc native module!');
@@ -66,8 +66,8 @@ function transformSync(src: string, options: Options): Output {
   );
 }
 
-function toBuffer(t) {
-  return Buffer.from(JSON.stringify(t));
+function toBuffer(data) {
+  return Buffer.from(JSON.stringify(data));
 }
 
 async function minify(src: string, opts: JsMinifyOptions): Promise<Output> {
