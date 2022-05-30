@@ -13,12 +13,13 @@ use serde::Deserialize;
 use std::{env, panic::set_hook, sync::Arc};
 use swc::{Compiler};
 use swc_common::{self, chain, pass::Optional, sync::Lazy, FileName, FilePathMapping, SourceMap};
-use swc_ecmascript::transforms::pass::noop;
 use swc_ecmascript::visit::Fold;
 use tracing_subscriber::filter::EnvFilter;
 use crate::keep_platform::{keep_platform, KeepPlatformConfig};
+use crate::remove_export_exprs::{remove_export_exprs};
 
 pub mod keep_platform;
+pub mod remove_export_exprs;
 pub mod minify;
 pub mod transform;
 mod util;
@@ -30,9 +31,14 @@ pub struct TransformOptions {
     pub swc: swc::config::Options,
     #[serde(default)]
     pub keep_platform: KeepPlatformConfig,
+    #[serde(default)]
+    pub remove_export_exprs: Vec<String>,
 }
 
-pub fn custom_before_pass(_name: &FileName, options: &TransformOptions) -> impl Fold {
+pub fn custom_before_pass(
+    _name: &FileName,
+    options: &TransformOptions
+) -> impl Fold {
     let mut keep_platform_config = KeepPlatformConfig::Bool(false);
     let enable_keep_platform: bool = match options.keep_platform.clone() {
         KeepPlatformConfig::KeepPlatform(platform) => {
@@ -42,10 +48,13 @@ pub fn custom_before_pass(_name: &FileName, options: &TransformOptions) -> impl 
         KeepPlatformConfig::Bool(val) => val,
     };
 
+    // let enable_remove_export_exprs: bool = match options.remove_export_exprs.clone() {}
+
     // custom before pass
     chain!(
         Optional::new(keep_platform(keep_platform_config), enable_keep_platform),
-        noop()
+        // Only when remove_export_exprs length more than one item add the plugin
+        Optional::new(remove_export_exprs(options.remove_export_exprs.clone()), options.remove_export_exprs.len() != 0)
     )
 }
 
