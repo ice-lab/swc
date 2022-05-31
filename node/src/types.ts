@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 export interface Plugin {
   (module: Program): Program;
 }
