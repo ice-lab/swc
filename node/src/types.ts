@@ -683,6 +683,8 @@ export interface OptimizerConfig {
   globals?: GlobalPassOption;
   /// https://swc.rs/docs/configuring-swc.html#jsctransformoptimizerjsonify
   jsonify?: { minCost: number };
+  /// https://swc.rs/docs/configuration/compilation#jsctransformoptimizersimplify
+  simplify?: boolean;
 }
 /**
  * Options for inline-global pass.
