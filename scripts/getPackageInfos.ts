@@ -44,7 +44,7 @@ export function getVersionPrefix(version): string {
 
 export async function getPackageInfos(distTag = ''): Promise<IPackageInfo[]> {
   const packageInfos: IPackageInfo[] = [];
-  const packageFolders: string[] = [ROOT_DIR].concat(
+  const packageFolders: string[] = [join(ROOT_DIR, 'node')].concat(
     readdirSync(NATIVE_NPM_DIRECTORY)
       .map((packageFolder) => join(NATIVE_NPM_DIRECTORY, packageFolder)),
   );

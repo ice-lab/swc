@@ -23,7 +23,7 @@ function loadBinding() {
   for (const triple of triples) {
     const localFilePath = path.join(
       __dirname,
-      '../native',
+      '../../native',
       `builder-swc.${triple.platformArchABI}.node`,
     );
     if (fs.existsSync(localFilePath)) {
