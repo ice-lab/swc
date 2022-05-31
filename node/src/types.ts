@@ -231,6 +231,7 @@ export interface TerserMangleOptions {
   safari10?: boolean;
   reserved?: string[];
 }
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface TerserManglePropertiesOptions {}
 /**
  * Programmatic options.
@@ -794,6 +795,7 @@ export interface Output {
    */
   map?: string;
 }
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface MatchPattern {}
 // -------------------------------
 // ---------- Ast nodes ----------
