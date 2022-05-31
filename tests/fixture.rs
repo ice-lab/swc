@@ -70,6 +70,18 @@ fn transform_namespace_kraken_fixture(input: PathBuf) {
     );
 }
 
+#[fixture("tests/fixture/keep_platform/empty/input.js")]
+fn transform_empty_fixture(input: PathBuf) {
+    let output = input.parent().unwrap().join("output.js");
+    let config = KeepPlatformConfig::KeepPlatform(String::from("web"));
+    test_fixture(
+        unminify_syntax(),
+        &|_tr| keep_platform(config.clone()),
+        &input,
+        &output,
+    );
+}
+
 #[fixture("tests/fixture/remove_export_exprs/**/input.js")]
 fn remove_export_exprs_fixture(input: PathBuf) {
     let output = input.parent().unwrap().join("output.js");
