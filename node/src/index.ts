@@ -5,7 +5,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { platform, arch } from 'os';
 import { platformArchTriples } from '@napi-rs/triples';
-import { Options, JsMinifyOptions, Output, Binding } from './types';
+import { Options, JsMinifyOptions, Output } from './types';
 
 const ArchName = arch();
 const PlatformName = platform();
@@ -23,7 +23,7 @@ function loadBinding() {
   for (const triple of triples) {
     const localFilePath = path.join(
       __dirname,
-      '../native',
+      '../../native',
       `builder-swc.${triple.platformArchABI}.node`,
     );
     if (fs.existsSync(localFilePath)) {
@@ -34,7 +34,7 @@ function loadBinding() {
     try {
       return require(`@builder/swc-${triple.platformArchABI}`);
     // eslint-disable-next-line no-empty
-    } catch (e) {}
+    } catch (error) {}
   }
 
   throw new Error('Cannot find target @builder/swc native module!');
@@ -66,8 +66,8 @@ function transformSync(src: string, options: Options): Output {
   );
 }
 
-function toBuffer(t) {
-  return Buffer.from(JSON.stringify(t));
+function toBuffer(data) {
+  return Buffer.from(JSON.stringify(data));
 }
 
 async function minify(src: string, opts: JsMinifyOptions): Promise<Output> {

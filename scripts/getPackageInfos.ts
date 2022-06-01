@@ -39,12 +39,12 @@ function checkVersionExists(pkg: string, version: string, distTag: string): Prom
 }
 
 export function getVersionPrefix(version): string {
-  return isNaN(version[0]) ? version[0] : '';
+  return Number.isNaN(version[0]) ? version[0] : '';
 }
 
 export async function getPackageInfos(distTag = ''): Promise<IPackageInfo[]> {
   const packageInfos: IPackageInfo[] = [];
-  const packageFolders: string[] = [ROOT_DIR].concat(
+  const packageFolders: string[] = [join(ROOT_DIR, 'node')].concat(
     readdirSync(NATIVE_NPM_DIRECTORY)
       .map((packageFolder) => join(NATIVE_NPM_DIRECTORY, packageFolder)),
   );
@@ -71,8 +71,8 @@ export async function getPackageInfos(distTag = ''): Promise<IPackageInfo[]> {
               checkBuildSuccess(packageFolder, packageInfo.main) &&
               !await checkVersionExists(packageName, publishVersion, distTag),
         });
-      } catch (e) {
-        console.log(`[ERROR] get ${packageName} information failed: `, e);
+      } catch (error) {
+        console.log(`[ERROR] get ${packageName} information failed: `, error);
       }
     } else {
       console.log(`[ERROR] ${packageFolder}'s package.json not found.`);

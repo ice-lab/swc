@@ -11,7 +11,7 @@ module.exports = {
     '^.+\\.(j|t)sx?$': 'ts-jest',
   },
   roots: [
-    '<rootDir>/tests',
+    '<rootDir>',
   ],
   testPathIgnorePatterns: [
     '/node_modules/',

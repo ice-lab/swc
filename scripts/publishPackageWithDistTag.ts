@@ -5,7 +5,11 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { spawnSync } from 'child_process';
 import { setPublishedPackages } from './published-info';
-import { IPackageInfo, getPackageInfos, getVersionPrefix } from './getPackageInfos';
+import {
+  IPackageInfo,
+  getPackageInfos,
+  getVersionPrefix,
+} from './getPackageInfos';
 
 const PUBLISH_TYPE = process.env.PUBLISH_TYPE || 'beta';
 const VERSION_PREFIX = process.env.VERSION_PREFIX || PUBLISH_TYPE;
@@ -16,24 +20,28 @@ interface ITagPackageInfo extends IPackageInfo {
 }
 
 const publishTag = process.env.PUBLISH_TAG || '';
-function getVersionInfo(packageInfo: IPackageInfo, tag: string): ITagPackageInfo {
+function getVersionInfo(
+  packageInfo: IPackageInfo,
+  tag: string,
+): ITagPackageInfo {
   const { name, localVersion } = packageInfo;
 
   let version = localVersion;
 
   if (!DIST_TAG_REG.test(localVersion)) {
     let distTagVersion = 1;
-    const childProcess = spawnSync('npm', [
-      'show', name, 'dist-tags',
-      '--json',
-    ], {
-      encoding: 'utf-8',
-    });
+    const childProcess = spawnSync(
+      'npm',
+      ['show', name, 'dist-tags', '--json'],
+      {
+        encoding: 'utf-8',
+      },
+    );
 
     let distTags = {};
     try {
       distTags = JSON.parse(childProcess.stdout) || {};
-    // eslint-disable-next-line no-empty
+      // eslint-disable-next-line no-empty
     } catch (err) {}
     const matched = (distTags[tag] || '').match(DIST_TAG_REG);
 
@@ -47,6 +55,16 @@ function getVersionInfo(packageInfo: IPackageInfo, tag: string): ITagPackageInfo
   return Object.assign({}, packageInfo, { distTagVersion: version });
 }
 
+function updateDepVersion(field, packageData, packageInfo) {
+  const dependenceName = packageInfo.name;
+  const dependenceVersion = packageInfo.distTagVersion;
+  if (packageData[field] && packageData[field][dependenceName]) {
+    packageData[field][dependenceName] = `${getVersionPrefix(
+      packageData[field][dependenceName],
+    )}${dependenceVersion}`;
+  }
+}
+
 function updatePackageJson(packageInfos: ITagPackageInfo[]): void {
   packageInfos.forEach((packageInfo: ITagPackageInfo) => {
     const { directory, distTagVersion } = packageInfo;
@@ -56,22 +74,22 @@ function updatePackageJson(packageInfos: ITagPackageInfo[]): void {
 
     packageData.version = distTagVersion;
 
-    for (let i = 0; i < packageInfos.length; i++) {
-      const dependenceName = packageInfos[i].name;
-      const dependenceVersion = packageInfos[i].distTagVersion;
-
-      if (packageData.dependencies && packageData.dependencies[dependenceName]) {
-        packageData.dependencies[dependenceName] = `${getVersionPrefix(packageData.dependencies[dependenceName])}${dependenceVersion}`;
-      } else if (packageData.devDependencies && packageData.devDependencies[dependenceName]) {
-        packageData.devDependencies[dependenceName] = `${getVersionPrefix(packageData.devDependencies[dependenceName])}${dependenceVersion}`;
-      }
+    for (let packageInfo of packageInfos) {
+      updateDepVersion('dependencies', packageData, packageInfo);
+      updateDepVersion('devDependencies', packageData, packageInfo);
+      updateDepVersion('optionalDependencies', packageData, packageInfo);
     }
 
     fs.writeFileSync(packageFile, JSON.stringify(packageData, null, 2));
   });
 }
 
-function publish(pkg: string, distTagVersion: string, directory: string, tag: string): void {
+function publish(
+  pkg: string,
+  distTagVersion: string,
+  directory: string,
+  tag: string,
+): void {
   console.log(`[PUBLISH ${tag.toUpperCase()}]`, `${pkg}@${distTagVersion}`);
   spawnSync('npm', [
     'publish',
@@ -102,7 +120,9 @@ getPackageInfos(publishTag).then((packageInfos: IPackageInfo[]) => {
     publishedPackages.push(`${name}:${distTagVersion}`);
   });
 
-  console.log(`[PUBLISH PACKAGE ${PUBLISH_TYPE.toUpperCase()}] Complete (count=${publishedCount}):`);
+  console.log(
+    `[PUBLISH PACKAGE ${PUBLISH_TYPE.toUpperCase()}] Complete (count=${publishedCount}):`,
+  );
   console.log(`${publishedPackages.join('\n')}`);
   setPublishedPackages(publishedPackages);
 });

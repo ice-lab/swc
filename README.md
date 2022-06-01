@@ -1,6 +1,6 @@
 ## @builder/swc
 
->swc version is 0.180.0
+>swc version is 0.181.2
 
 <img src="https://img.shields.io/npm/v/@builder/swc.svg" alt="npm package" />
 <img src="https://img.shields.io/npm/dm/@builder/swc.svg" alt="npm downloads" />

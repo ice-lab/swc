@@ -25,8 +25,8 @@ getPackageInfos(publishTag).then((packageInfos: IPackageInfo[]) => {
   // Publish
   let publishedCount = 0;
   const publishedPackages = [];
-  for (let i = 0; i < packageInfos.length; i++) {
-    const { name, directory, localVersion, shouldPublish } = packageInfos[i];
+  for (let packageInfo of packageInfos) {
+    const { name, directory, localVersion, shouldPublish } = packageInfo;
     if (shouldPublish) {
       publishedCount++;
       console.log(`--- ${name}@${localVersion} ---`);
@@ -34,6 +34,7 @@ getPackageInfos(publishTag).then((packageInfos: IPackageInfo[]) => {
       publishedPackages.push(`${name}:${localVersion}`);
     }
   }
+
   console.log(`[PUBLISH PACKAGE PRODUCTION] Complete (count=${publishedCount}):`);
   console.log(`${publishedPackages.join('\n')}`);
   setPublishedPackages(publishedPackages);

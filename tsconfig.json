@@ -8,12 +8,10 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "allowJs": true,
-    "baseUrl": "./node",
-    "rootDir": "./node",
-    "outDir": "lib",
+    "outDir": "node/lib",
     "moduleResolution": "node"
   },
-  "include": ["node/index.ts"],
+  "include": ["node/src"],
   "exclude": [
     "src/**/*"
   ]

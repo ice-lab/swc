@@ -163,15 +163,17 @@ fn check_source(source: &str) -> bool {
 
 // Insert variable declarator into module items, exp: var isWeb = true;
 fn insert_decls_into_module_items(decls: Vec<VarDeclarator>, module_items: &mut Vec<ModuleItem>) {
-    module_items.insert(
-        0,
-        ModuleItem::Stmt(Stmt::Decl(Decl::Var(VarDecl {
-            span: DUMMY_SP,
-            kind: VarDeclKind::Var,
-            declare: false,
-            decls: decls,
-        }))),
-    );
+    if decls.len() > 0 {
+        module_items.insert(
+            0,
+            ModuleItem::Stmt(Stmt::Decl(Decl::Var(VarDecl {
+                span: DUMMY_SP,
+                kind: VarDeclKind::Var,
+                declare: false,
+                decls: decls,
+            }))),
+        )
+    }
 }
 
 // Create Ident by jsword
