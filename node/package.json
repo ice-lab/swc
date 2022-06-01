@@ -1,6 +1,6 @@
 {
   "name": "@builder/swc",
-  "version": "0.1.4-beta.8",
+  "version": "0.1.4",
   "main": "lib/index.js",
   "napi": {
     "name": "builder-swc",
