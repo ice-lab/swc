@@ -16,19 +16,16 @@ jobs:
             target: 'x86_64-apple-darwin'
             build: |
               yarn run setup &&
-              yarn run clean:binary ./native/builder-swc.darwin-x64.node &&
               yarn run build:swc &&
               strip -x ./native/builder-swc.darwin-x64.node
           - host: windows-latest
             build: |
               yarn run setup &&
-              yarn run clean:binary ./native/builder-swc.win32-x64-msvc.node &&
               yarn run build:swc
             target: 'x86_64-pc-windows-msvc'
           - host: windows-latest
             build: |
               yarn run setup &&
-              yarn run clean:binary ./native/builder-swc.win32-ia32-msvc.node &&
               yarn run build:swc --target i686-pc-windows-msvc
             target: 'i686-pc-windows-msvc'
           - host: ubuntu-latest
@@ -39,7 +36,6 @@ jobs:
               rustup toolchain install $(cat ./rust-toolchain) &&
               rustup target add x86_64-unknown-linux-gnu &&
               yarn run setup &&
-              yarn run clean:binary ./native/builder-swc.linux-x64-gnu.node &&
               yarn run build:swc --target x86_64-unknown-linux-gnu &&
               llvm-strip -x ./native/builder-swc.linux-x64-gnu.node
           - host: ubuntu-latest
@@ -49,7 +45,6 @@ jobs:
               rustup toolchain install $(cat ./rust-toolchain) &&
               rustup target add x86_64-unknown-linux-musl &&
               yarn run setup &&
-              yarn run clean:binary ./native/builder-swc.linux-x64-musl.node &&
               yarn run build:swc --target x86_64-unknown-linux-musl &&
               strip -x ./native/builder-swc.linux-x64-musl.node
           - host: macos-latest
@@ -61,7 +56,6 @@ jobs:
               SYSROOT=$(xcrun --sdk macosx --show-sdk-path);
               export CFLAGS="-isysroot $SYSROOT -isystem $SYSROOT";
               yarn run setup &&
-              yarn run clean:binary ./native/builder-swc.darwin-arm64.node &&
               yarn run build:swc --target aarch64-apple-darwin &&
               strip -x ./native/builder-swc.darwin-arm64.node
           - host: ubuntu-latest
@@ -71,7 +65,6 @@ jobs:
               rustup toolchain install $(cat ./rust-toolchain) &&
               rustup target add aarch64-unknown-linux-gnu &&
               yarn run setup &&
-              yarn run clean:binary ./native/builder-swc.linux-arm64-gnu.node &&
               yarn run build:swc --target aarch64-unknown-linux-gnu &&
               llvm-strip -x ./native/builder-swc.linux-arm64-gnu.node
           - host: ubuntu-latest
@@ -81,14 +74,12 @@ jobs:
               rustup toolchain install $(cat ./rust-toolchain) &&
               rustup target add aarch64-unknown-linux-musl &&
               yarn run setup &&
-              yarn run clean:binary ./native/builder-swc.linux-arm64-musl.node &&
-              env RUSTFLAGS='-C target-feature=-crt-static -Z new-llvm-pass-manager=no' yarn run build:swc --target aarch64-unknown-linux-musl &&
+              yarn run build:swc --target aarch64-unknown-linux-musl &&
               llvm-strip -x ./native/builder-swc.linux-arm64-musl.node
           - host: windows-latest
             target: 'aarch64-pc-windows-msvc'
             build: |
               yarn run setup &&
-              yarn run clean:binary ./native/builder-swc.win32-arm64-msvc.node &&
               yarn run build:swc --target aarch64-pc-windows-msvc
     name: stable - ${{ matrix.settings.target }} - node@16
     runs-on: ${{ matrix.settings.host }}
@@ -124,7 +115,7 @@ jobs:
         uses: actions/setup-node@v3
         if: ${{ !matrix.settings.docker }}
         with:
-          node-version: 16
+          node-version: 12
           check-latest: true
           cache: yarn
 
