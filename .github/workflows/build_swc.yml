@@ -15,18 +15,18 @@ jobs:
           - host: macos-latest
             target: 'x86_64-apple-darwin'
             build: |
-              yarn install @napi-rs/cli@2 &&
-              yarn run build:swc &&
+              npm install @napi-rs/cli@2 &&
+              npm run build:swc &&
               strip -x ./native/builder-swc.darwin-x64.node
           - host: windows-latest
             build: |
-              yarn install @napi-rs/cli@2 &&
-              yarn run build:swc
+              npm install @napi-rs/cli@2 &&
+              npm run build:swc
             target: 'x86_64-pc-windows-msvc'
           - host: windows-latest
             build: |
-              yarn install @napi-rs/cli@2 &&
-              yarn run build:swc --target i686-pc-windows-msvc
+              npm install @napi-rs/cli@2 &&
+              npm run build:swc -- --target i686-pc-windows-msvc
             target: 'i686-pc-windows-msvc'
           - host: ubuntu-latest
             target: 'x86_64-unknown-linux-gnu'
@@ -35,8 +35,8 @@ jobs:
             build: >-
               rustup toolchain install $(cat ./rust-toolchain) &&
               rustup target add x86_64-unknown-linux-gnu &&
-              yarn install @napi-rs/cli@2 &&
-              yarn run build:swc --target x86_64-unknown-linux-gnu &&
+              npm install @napi-rs/cli@2 &&
+              npm run build:swc -- --target x86_64-unknown-linux-gnu &&
               llvm-strip -x ./native/builder-swc.linux-x64-gnu.node
           - host: ubuntu-latest
             target: 'x86_64-unknown-linux-musl'
@@ -44,8 +44,8 @@ jobs:
             build: >-
               rustup toolchain install $(cat ./rust-toolchain) &&
               rustup target add x86_64-unknown-linux-musl &&
-              yarn install @napi-rs/cli@2 &&
-              yarn run build:swc --target x86_64-unknown-linux-musl &&
+              npm install @napi-rs/cli@2 &&
+              npm run build:swc -- --target x86_64-unknown-linux-musl &&
               strip -x ./native/builder-swc.linux-x64-musl.node
           - host: macos-latest
             target: 'aarch64-apple-darwin'
@@ -55,8 +55,8 @@ jobs:
               export CXX=$(xcrun -f clang++);
               SYSROOT=$(xcrun --sdk macosx --show-sdk-path);
               export CFLAGS="-isysroot $SYSROOT -isystem $SYSROOT";
-              yarn install @napi-rs/cli@2 &&
-              yarn run build:swc --target aarch64-apple-darwin &&
+              npm install @napi-rs/cli@2 &&
+              npm run build:swc -- --target aarch64-apple-darwin &&
               strip -x ./native/builder-swc.darwin-arm64.node
           - host: ubuntu-latest
             target: 'aarch64-unknown-linux-gnu'
@@ -64,8 +64,8 @@ jobs:
             build: >-
               rustup toolchain install $(cat ./rust-toolchain) &&
               rustup target add aarch64-unknown-linux-gnu &&
-              yarn install @napi-rs/cli@2 &&
-              yarn run build:swc --target aarch64-unknown-linux-gnu &&
+              npm install @napi-rs/cli@2 &&
+              npm run build:swc -- --target aarch64-unknown-linux-gnu &&
               llvm-strip -x ./native/builder-swc.linux-arm64-gnu.node
           - host: ubuntu-latest
             target: 'aarch64-unknown-linux-musl'
@@ -73,14 +73,14 @@ jobs:
             build: >-
               rustup toolchain install $(cat ./rust-toolchain) &&
               rustup target add aarch64-unknown-linux-musl &&
-              yarn install @napi-rs/cli@2 &&
-              yarn run build:swc --target aarch64-unknown-linux-musl &&
+              npm install @napi-rs/cli@2 &&
+              npm run build:swc -- --target aarch64-unknown-linux-musl &&
               llvm-strip -x ./native/builder-swc.linux-arm64-musl.node
           - host: windows-latest
             target: 'aarch64-pc-windows-msvc'
             build: |
-              yarn install @napi-rs/cli@2 &&
-              yarn run build:swc --target aarch64-pc-windows-msvc
+              npm install @napi-rs/cli@2 &&
+              npm run build:swc -- --target aarch64-pc-windows-msvc
     name: stable - ${{ matrix.settings.target }} - node@16
     runs-on: ${{ matrix.settings.host }}
     steps:
