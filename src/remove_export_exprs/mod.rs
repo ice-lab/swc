@@ -465,6 +465,32 @@ impl Fold for RemoveExportsExprs {
         d
     }
 
+    fn fold_export_default_expr(&mut self, n: ExportDefaultExpr) -> ExportDefaultExpr {
+        if self.state.should_remove_default() {
+            // Replace with an empty function
+            return ExportDefaultExpr {
+                span: DUMMY_SP,
+                expr: Box::new(Expr::Fn(FnExpr {
+                    ident: None,
+                    function: Function {
+                        params: vec![],
+                        body: Some(BlockStmt {
+                            span: DUMMY_SP,
+                            stmts: vec![]
+                        }),
+                        span: DUMMY_SP,
+                        is_generator: false,
+                        is_async: false,
+                        decorators: vec![],
+                        return_type: None,
+                        type_params: None,
+                    }
+                }))
+            };
+        }
+        n
+    }
+
     /// This methods returns [Pat::Invalid] if the pattern should be removed.
     fn fold_pat(&mut self, mut p: Pat) -> Pat {
         p = p.fold_children_with(self);
