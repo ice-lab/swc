@@ -1,9 +1,5 @@
 # Changelog
 
-## 0.1.5
-- feat: support remove default expression
-- feat: support remove import used by default
-
 ## 0.1.4
 
 - feat: `options.keepPlatform` add import source @uni/env
