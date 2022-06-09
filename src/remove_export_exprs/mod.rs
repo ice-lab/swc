@@ -224,6 +224,38 @@ impl Fold for Analyzer<'_> {
         n
     }
 
+    // fn fold_default_decl(&mut self, d: DefaultDecl) -> DefaultDecl {
+    //     let old_in_data = self.in_data_fn;
+
+    //     if self.state.should_remove_default() {
+    //         self.in_data_fn = true;
+
+    //         let d = d.fold_children_with(self);
+
+    //         self.in_data_fn = old_in_data;
+
+    //         return d
+    //     }
+
+    //     d
+    // }
+
+    // fn fold_export_default_expr(&mut self, e: ExportDefaultExpr) -> ExportDefaultExpr {
+    //     let old_in_data = self.in_data_fn;
+
+    //     if self.state.should_remove_default() {
+    //         self.in_data_fn = true;
+
+    //         let e = e.fold_children_with(self);
+
+    //         self.in_data_fn = old_in_data;
+
+    //         return e
+    //     }
+
+    //     e
+    // }
+
     fn fold_prop(&mut self, p: Prop) -> Prop {
         let p = p.fold_children_with(self);
 
@@ -508,7 +540,7 @@ impl Fold for RemoveExportsExprs {
 
                         return Pat::Invalid(Invalid { span: DUMMY_SP });
                     }
-                }
+                } 
                 Pat::Array(arr) => {
                     if !arr.elems.is_empty() {
                         arr.elems.retain(|e| !matches!(e, Some(Pat::Invalid(..))));
