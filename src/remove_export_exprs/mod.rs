@@ -68,7 +68,7 @@ impl Analyzer<'_> {
         }
     }
 
-    fn mark_default_export(&mut self, e:  ) {
+    fn mark_default_export(&mut self, e: DefaultDecl) -> DefaultDecl{
         let old_in_data = self.in_data_fn;
             
         self.in_data_fn = true;
