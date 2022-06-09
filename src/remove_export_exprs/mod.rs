@@ -67,6 +67,18 @@ impl Analyzer<'_> {
             self.state.refs_from_other.insert(id);
         }
     }
+
+    fn mark_default_export(&mut self, e:  ) {
+        let old_in_data = self.in_data_fn;
+            
+        self.in_data_fn = true;
+
+        let e = e.fold_children_with(self);
+
+        self.in_data_fn = old_in_data;
+
+        return e
+    }
 }
 
 impl Fold for Analyzer<'_> {
@@ -241,9 +253,11 @@ impl Fold for Analyzer<'_> {
     }
 
     fn fold_export_default_expr(&mut self, e: ExportDefaultExpr) -> ExportDefaultExpr {
-        let old_in_data = self.in_data_fn;
+        
 
         if self.state.should_remove_default() {
+            let old_in_data = self.in_data_fn;
+
             self.in_data_fn = true;
 
             let e = e.fold_children_with(self);
