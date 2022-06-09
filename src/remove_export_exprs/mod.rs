@@ -540,7 +540,7 @@ impl Fold for RemoveExportsExprs {
 
                         return Pat::Invalid(Invalid { span: DUMMY_SP });
                     }
-                } 
+                }
                 Pat::Array(arr) => {
                     if !arr.elems.is_empty() {
                         arr.elems.retain(|e| !matches!(e, Some(Pat::Invalid(..))));
