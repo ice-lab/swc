@@ -44,3 +44,6 @@ rustflags = [
   "-Z",
   "new-llvm-pass-manager=no",
 ]
+
+[net]
+git-fetch-with-cli = true
