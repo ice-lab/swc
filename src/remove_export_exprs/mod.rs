@@ -68,7 +68,7 @@ impl Analyzer<'_> {
         }
     }
 
-    fn mark_default_export(&mut self, e: DefaultDecl) -> DefaultDecl{
+    fn mark_default_export(&mut self, e: ExportDefaultExpr) -> ExportDefaultExpr {
         let old_in_data = self.in_data_fn;
             
         self.in_data_fn = true;
@@ -77,7 +77,7 @@ impl Analyzer<'_> {
 
         self.in_data_fn = old_in_data;
 
-        return e
+        e
     }
 }
 
@@ -253,18 +253,16 @@ impl Fold for Analyzer<'_> {
     }
 
     fn fold_export_default_expr(&mut self, e: ExportDefaultExpr) -> ExportDefaultExpr {
-        
-
         if self.state.should_remove_default() {
-            let old_in_data = self.in_data_fn;
+            // let old_in_data = self.in_data_fn;
 
-            self.in_data_fn = true;
+            // self.in_data_fn = true;
 
-            let e = e.fold_children_with(self);
+            // let e = e.fold_children_with(self);
 
-            self.in_data_fn = old_in_data;
+            // self.in_data_fn = old_in_data;
 
-            return e
+            return self.mark_default_export(e);
         }
 
         e
