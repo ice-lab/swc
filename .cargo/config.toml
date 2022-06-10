@@ -14,6 +14,14 @@ rustflags = [
   "new-llvm-pass-manager=no",
 ]
 
+[target.x86_64-apple-darwin]
+rustflags = [
+  "-C",
+  "link-args=-Wl,-undefined,dynamic_lookup",
+  "-Z",
+  "new-llvm-pass-manager=no",
+]
+
 [target.x86_64-unknown-linux-gnu]
 linker = "x86_64-linux-gnu-gcc"
 rustflags = [
