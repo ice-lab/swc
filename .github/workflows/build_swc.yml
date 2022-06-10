@@ -12,9 +12,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - run: rustup toolchain install $(cat ./rust-toolchain) &&
-             rustup target add x86_64-unknown-linux-gnu &&
-             cd . && cargo test
+      - name: Install
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly-2022-04-12
+          profile: minimal
+      - run: cd . && cargo test
       
   # Build binaries for publishing
   build-native:
