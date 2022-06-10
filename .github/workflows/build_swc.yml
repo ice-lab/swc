@@ -13,11 +13,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install
-        uses: actions-rs/toolchain@v1
+        uses: addnab/docker-run-action@v3
         with:
-          toolchain: nightly-2022-04-12
+          image: ghcr.io/napi-rs/napi-rs/nodejs-rust:lts-debian
           profile: minimal
       - run:
+          rustup toolchain install $(cat ./rust-toolchain) &&
+          rustup target add x86_64-unknown-linux-gnu &&
           cargo test
 
   # Build binaries for publishing
