@@ -68,16 +68,21 @@ impl Analyzer<'_> {
         }
     }
 
-    fn mark_default_export(&mut self, e: ExportDefaultExpr) -> ExportDefaultExpr {
-        let old_in_data = self.in_data_fn;
+    fn check_default<T:FoldWith<Self>>(&mut self, e: T) -> T {
+        if self.state.should_remove_default() {
             
-        self.in_data_fn = true;
+            let old_in_data = self.in_data_fn;
 
-        let e = e.fold_children_with(self);
+            self.in_data_fn = true;
+    
+            let e = e.fold_children_with(self);
+    
+            self.in_data_fn = old_in_data;
+    
+            return e
+        }
 
-        self.in_data_fn = old_in_data;
-
-        e
+        return e.fold_children_with(self);
     }
 }
 
@@ -237,35 +242,11 @@ impl Fold for Analyzer<'_> {
     }
 
     fn fold_default_decl(&mut self, d: DefaultDecl) -> DefaultDecl {
-        let old_in_data = self.in_data_fn;
-
-        if self.state.should_remove_default() {
-            self.in_data_fn = true;
-
-            let d = d.fold_children_with(self);
-
-            self.in_data_fn = old_in_data;
-
-            return d
-        }
-
-        d
+        return self.check_default(d);
     }
 
     fn fold_export_default_expr(&mut self, e: ExportDefaultExpr) -> ExportDefaultExpr {
-        if self.state.should_remove_default() {
-            // let old_in_data = self.in_data_fn;
-
-            // self.in_data_fn = true;
-
-            // let e = e.fold_children_with(self);
-
-            // self.in_data_fn = old_in_data;
-
-            return self.mark_default_export(e);
-        }
-
-        e
+        return self.check_default(e);
     }
 
     fn fold_prop(&mut self, p: Prop) -> Prop {
