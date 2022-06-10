@@ -15,10 +15,11 @@ jobs:
       - name: Install
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: ${{(cat ./rust-toolchain)}}
+          toolchain: nightly-2022-04-12
           profile: minimal
       - run:
           cargo test
+
   # Build binaries for publishing
   build-native:
     strategy:
