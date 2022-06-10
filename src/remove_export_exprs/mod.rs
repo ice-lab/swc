@@ -318,6 +318,25 @@ impl RemoveExportsExprs {
         self.state.should_run_again = true;
         n
     }
+
+    fn create_empty_fn(&mut self) -> FnExpr {
+        return FnExpr {
+            ident: None,
+            function: Function {
+                params: vec![],
+                body: Some(BlockStmt {
+                    span: DUMMY_SP,
+                    stmts: vec![]
+                }),
+                span: DUMMY_SP,
+                is_generator: false,
+                is_async: false,
+                decorators: vec![],
+                return_type: None,
+                type_params: None,
+            }
+        };
+    }
 }
 
 impl Repeated for RemoveExportsExprs {
@@ -470,22 +489,7 @@ impl Fold for RemoveExportsExprs {
     fn fold_default_decl(&mut self, d: DefaultDecl) -> DefaultDecl {
         if self.state.should_remove_default() {
             // Replace with an empty function
-            return DefaultDecl::Fn(FnExpr {
-                ident: None,
-                function: Function {
-                    params: vec![],
-                    body: Some(BlockStmt {
-                        span: DUMMY_SP,
-                        stmts: vec![]
-                    }),
-                    span: DUMMY_SP,
-                    is_generator: false,
-                    is_async: false,
-                    decorators: vec![],
-                    return_type: None,
-                    type_params: None,
-                }
-            })
+            return DefaultDecl::Fn(self.create_empty_fn())
         }
         d
     }
@@ -495,22 +499,7 @@ impl Fold for RemoveExportsExprs {
             // Replace with an empty function
             return ExportDefaultExpr {
                 span: DUMMY_SP,
-                expr: Box::new(Expr::Fn(FnExpr {
-                    ident: None,
-                    function: Function {
-                        params: vec![],
-                        body: Some(BlockStmt {
-                            span: DUMMY_SP,
-                            stmts: vec![]
-                        }),
-                        span: DUMMY_SP,
-                        is_generator: false,
-                        is_async: false,
-                        decorators: vec![],
-                        return_type: None,
-                        type_params: None,
-                    }
-                }))
+                expr: Box::new(Expr::Fn(self.create_empty_fn()))
             };
         }
         n
