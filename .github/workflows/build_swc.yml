@@ -8,7 +8,7 @@ name: Build @builder/swc native binaries
 jobs:
   test-native:
     name: Unit Test Native Code
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
