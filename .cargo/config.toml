@@ -17,7 +17,7 @@ rustflags = [
 [target.x86_64-unknown-linux-gnu]
 rustflags = [
   "-C",
-  "link-args=-Wl,-undefined,dynamic_lookup",
+  "link-args=-lld,-undefined,dynamic_lookup",
   "-Z",
   "new-llvm-pass-manager=no",
 ]
