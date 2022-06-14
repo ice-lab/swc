@@ -22,7 +22,7 @@ jobs:
         with:
           toolchain: nightly-2022-02-23
           profile: minimal
-      - run: cd . && cargo test
+      - run: cd . && cargo test --no-default-features
       
   # Build binaries for publishing
   build-native:

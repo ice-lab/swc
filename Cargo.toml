@@ -6,6 +6,9 @@ version = "0.1.0"
 [lib]
 crate-type = ["cdylib", "rlib"]
 
+[features]
+default = ["napi"]
+
 [dependencies]
 anyhow = "1.0"
 backtrace = "0.3"
