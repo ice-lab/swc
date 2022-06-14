@@ -18,15 +18,7 @@ rustflags = [
 rustflags = [
   "-C",
   "link-args=-Wl,-undefined,dynamic_lookup",
-    "-Z",
-  "new-llvm-pass-manager=no",
-]
-
-[target.x86_64-unknown-linux-gcc]
-rustflags = [
-  "-C",
-  "link-args=-Wl,-undefined,dynamic_lookup",
-    "-Z",
+  "-Z",
   "new-llvm-pass-manager=no",
 ]
 
