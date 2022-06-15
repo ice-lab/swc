@@ -1,10 +1,11 @@
 # Changelog
 
-## 0.1.4
+## 0.2.0
 
-- feat: `options.keepPlatform` add import source @uni/env
 - chore: update swc to 0.95.0
+- feat: `options.keepPlatform` add import source @uni/env
 - fix: `options.keepPlatform`  analyse import namespace
+- feat: support remove exports
 
 ## 0.1.3
 
