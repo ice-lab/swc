@@ -6,13 +6,18 @@ version = "0.1.0"
 [lib]
 crate-type = ["cdylib", "rlib"]
 
+[features]
+default = ["napi"]
+
 [dependencies]
 anyhow = "1.0"
 backtrace = "0.3"
 chrono = "0.4"
 easy-error = "1.0.0"
-napi = {version = "1", features = ["serde-json"]}
-napi-derive = "1"
+napi = {version = "2", features = ["napi3", "serde-json"]}
+napi-derive = {version = "2", features = [
+    "type-def",
+]}
 path-clean = "0.1"
 regex = "1.5"
 serde = {version = "1", features = ["derive"]}
