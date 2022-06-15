@@ -22,5 +22,5 @@ jobs:
         with:
           toolchain: nightly-2022-02-23
           profile: minimal
-      - run: cd . && cargo test --no-default-features
+      - run: cd . && cargo test
     
