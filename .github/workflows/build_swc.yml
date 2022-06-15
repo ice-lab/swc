@@ -8,7 +8,7 @@ name: Build @builder/swc native binaries
 jobs:
   test-native:
     name: Unit Test Native Code
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
       - name: Setup node
@@ -22,5 +22,5 @@ jobs:
         with:
           toolchain: nightly-2022-02-23
           profile: minimal
-      - run: cd . && cargo test --no-default-features
+      - run: cd . && cargo test
     
