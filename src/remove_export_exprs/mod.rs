@@ -67,6 +67,23 @@ impl Analyzer<'_> {
             self.state.refs_from_other.insert(id);
         }
     }
+
+    fn check_default<T:FoldWith<Self>>(&mut self, e: T) -> T {
+        if self.state.should_remove_default() {
+            
+            let old_in_data = self.in_data_fn;
+
+            self.in_data_fn = true;
+    
+            let e = e.fold_children_with(self);
+    
+            self.in_data_fn = old_in_data;
+    
+            return e
+        }
+
+        return e.fold_children_with(self);
+    }
 }
 
 impl Fold for Analyzer<'_> {
@@ -224,6 +241,14 @@ impl Fold for Analyzer<'_> {
         n
     }
 
+    fn fold_default_decl(&mut self, d: DefaultDecl) -> DefaultDecl {
+        return self.check_default(d);
+    }
+
+    fn fold_export_default_expr(&mut self, e: ExportDefaultExpr) -> ExportDefaultExpr {
+        return self.check_default(e);
+    }
+
     fn fold_prop(&mut self, p: Prop) -> Prop {
         let p = p.fold_children_with(self);
 
@@ -292,6 +317,25 @@ impl RemoveExportsExprs {
         let n = n.fold_with(&mut v);
         self.state.should_run_again = true;
         n
+    }
+
+    fn create_empty_fn(&mut self) -> FnExpr {
+        return FnExpr {
+            ident: None,
+            function: Function {
+                params: vec![],
+                body: Some(BlockStmt {
+                    span: DUMMY_SP,
+                    stmts: vec![]
+                }),
+                span: DUMMY_SP,
+                is_generator: false,
+                is_async: false,
+                decorators: vec![],
+                return_type: None,
+                type_params: None,
+            }
+        };
     }
 }
 
@@ -445,24 +489,20 @@ impl Fold for RemoveExportsExprs {
     fn fold_default_decl(&mut self, d: DefaultDecl) -> DefaultDecl {
         if self.state.should_remove_default() {
             // Replace with an empty function
-            return DefaultDecl::Fn(FnExpr {
-                ident: None,
-                function: Function {
-                    params: vec![],
-                    body: Some(BlockStmt {
-                        span: DUMMY_SP,
-                        stmts: vec![]
-                    }),
-                    span: DUMMY_SP,
-                    is_generator: false,
-                    is_async: false,
-                    decorators: vec![],
-                    return_type: None,
-                    type_params: None,
-                }
-            })
+            return DefaultDecl::Fn(self.create_empty_fn())
         }
         d
+    }
+
+    fn fold_export_default_expr(&mut self, n: ExportDefaultExpr) -> ExportDefaultExpr {
+        if self.state.should_remove_default() {
+            // Replace with an empty function
+            return ExportDefaultExpr {
+                span: DUMMY_SP,
+                expr: Box::new(Expr::Fn(self.create_empty_fn()))
+            };
+        }
+        n
     }
 
     /// This methods returns [Pat::Invalid] if the pattern should be removed.

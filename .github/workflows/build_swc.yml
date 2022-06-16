@@ -6,6 +6,24 @@ on:
 name: Build @builder/swc native binaries
 
 jobs:
+  test-native:
+    name: Unit Test Native Code
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          check-latest: true
+      - uses: actions/checkout@v3
+      - name: Install
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly-2022-02-23
+          profile: minimal
+      - run: cd . && cargo test
+      
   # Build binaries for publishing
   build-native:
     strategy:
