@@ -28,14 +28,14 @@
     "node": ">= 12"
   },
   "optionalDependencies": {
-    "@builder/swc-darwin-arm64": "0.1.4",
-    "@builder/swc-darwin-x64": "0.1.4",
-    "@builder/swc-linux-arm64-gnu": "0.1.4",
-    "@builder/swc-linux-arm64-musl": "0.1.4",
-    "@builder/swc-linux-x64-gnu": "0.1.4",
-    "@builder/swc-linux-x64-musl": "0.1.4",
-    "@builder/swc-win32-arm64-msvc": "0.1.4",
-    "@builder/swc-win32-ia32-msvc": "0.1.4",
-    "@builder/swc-win32-x64-msvc": "0.1.4"
+    "@builder/swc-darwin-arm64": "0.2.0",
+    "@builder/swc-darwin-x64": "0.2.0",
+    "@builder/swc-linux-arm64-gnu": "0.2.0",
+    "@builder/swc-linux-arm64-musl": "0.2.0",
+    "@builder/swc-linux-x64-gnu": "0.2.0",
+    "@builder/swc-linux-x64-musl": "0.2.0",
+    "@builder/swc-win32-arm64-msvc": "0.2.0",
+    "@builder/swc-win32-ia32-msvc": "0.2.0",
+    "@builder/swc-win32-x64-msvc": "0.2.0"
   }
 }
