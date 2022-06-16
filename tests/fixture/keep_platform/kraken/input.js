@@ -14,4 +14,3 @@ if (isKraken) {
   console.log('others2');
 }
 
-

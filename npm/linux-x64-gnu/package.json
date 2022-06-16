@@ -1,11 +1,14 @@
 {
   "name": "@builder/swc-linux-x64-gnu",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "os": [
     "linux"
   ],
   "cpu": [
     "x64"
+  ],
+  "libc": [
+    "glibc"
   ],
   "main": "builder-swc.linux-x64-gnu.node",
   "files": [

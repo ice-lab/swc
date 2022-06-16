@@ -1,0 +1,129 @@
+import { transformSync } from '../../node';
+
+describe('swc remove multiple ends code', () => {
+  it('should keep original code with not config keepPlatform', () => {
+    const originalCode = `import { isWeb } from 'universal-env';
+    if (isWeb) {
+      console.log('This is web');
+    } else {
+      console.log('This is others');
+    }
+    `;
+
+    const { code } = transformSync(originalCode, {
+      sourceMaps: false,
+      jsc: {
+        parser: {
+          syntax: 'ecmascript',
+        },
+        target: 'es5',
+      },
+    });
+
+    expect(code).toEqual(`import { isWeb } from "universal-env";
+if (isWeb) {
+    console.log("This is web");
+} else {
+    console.log("This is others");
+}
+`);
+  });
+
+  it('should assign isWeb as true', () => {
+    const originalCode = `import { isWeb } from 'universal-env';
+    if (isWeb) {
+      console.log('This is web');
+    } else {
+      console.log('This is others');
+    }
+    `;
+
+    const { code } = transformSync(originalCode, {
+      sourceMaps: false,
+      jsc: {
+        parser: {
+          syntax: 'ecmascript',
+        },
+        target: 'es5',
+      },
+      keepPlatform: 'web',
+    });
+
+    expect(code).toEqual(`var isWeb = true;
+if (isWeb) {
+    console.log("This is web");
+} else {
+    console.log("This is others");
+}
+`);
+  });
+
+  it('should save web code', () => {
+    const originalCode = `import { isWeb, isWeex } from 'universal-env';
+    if (isWeb) {
+      console.log('This is web');
+    } else if (isWeex) {
+      console.log('This is weex');
+    } else {
+      console.log('others');
+    }
+    `;
+
+    const { code } = transformSync(originalCode, {
+      sourceMaps: false,
+      jsc: {
+        minify: {
+          compress: true,
+          mangle: true,
+        },
+        parser: {
+          syntax: 'ecmascript',
+        },
+        target: 'es5',
+        transform: {
+          optimizer: {
+            simplify: true,
+          },
+        },
+      },
+      keepPlatform: 'web',
+      minify: true,
+    });
+
+    expect(code).toEqual('console.log("This is web")');
+  });
+
+  it('should assign env variable with import namespace', () => {
+    const originalCode = `import * as env from "universal-env";
+    if (env.isWeb) {
+      console.log("This is web");
+    } else if (env.isWeex) {
+      console.log("This is weex");
+    } else {
+      console.log("others");
+    }`;
+
+    const { code } = transformSync(originalCode, {
+      sourceMaps: false,
+      jsc: {
+        parser: {
+          syntax: 'ecmascript',
+        },
+        target: 'es5',
+      },
+      keepPlatform: 'web',
+    });
+
+    expect(code).toEqual(`var env = {
+    isWeb: true
+};
+if (env.isWeb) {
+    console.log("This is web");
+} else if (env.isWeex) {
+    console.log("This is weex");
+} else {
+    console.log("others");
+}
+`);
+  });
+});

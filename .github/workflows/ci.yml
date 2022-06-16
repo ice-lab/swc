@@ -3,27 +3,44 @@ name: CI
 on: [push]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  # Build binaries for publishing
+  build-native:
     strategy:
+      fail-fast: false
       matrix:
-        node-version: [12.x]
+        settings:
+          - host: macos-latest
+            target: 'x86_64-apple-darwin'
+          - host: windows-latest
+            target: 'x86_64-pc-windows-msvc'
+          - host: windows-latest
+            target: 'i686-pc-windows-msvc'
+          - host: ubuntu-latest
+            target: 'x86_64-unknown-linux-gnu'
+          - host: ubuntu-latest
+            target: 'x86_64-unknown-linux-musl'
+          - host: macos-latest
+            target: 'aarch64-apple-darwin'
+          - host: ubuntu-latest
+            target: 'aarch64-unknown-linux-gnu'
+          - host: ubuntu-latest
+            target: 'aarch64-unknown-linux-musl'
+          - host: windows-latest
+            target: 'aarch64-pc-windows-msvc'
+    name: stable - ${{ matrix.settings.target }} - node@12
+    runs-on: ${{ matrix.settings.host }}
     steps:
       - uses: actions/checkout@v2
       - name: Set branch name
         run: echo >>$GITHUB_ENV BRANCH_NAME=${GITHUB_REF#refs/heads/}
       - name: Echo branch name
         run: echo ${BRANCH_NAME}
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+      - uses: actions/checkout@v3
+      - name: Setup node
+        uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 12
           registry-url: https://registry.npmjs.org/
+
       - run: npm run setup
-      - run: npm run lint
-      - run: npm run test
-      - run: npm run copy:swc
-        env:
-          ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
-          ACCESS_KEY_SECRET: ${{ secrets.ACCESS_KEY_SECRET }}
-          CI: true
+      - run: npm run ci

@@ -1,6 +1,6 @@
 ## @builder/swc
 
-> swc version is 0.81.1
+>swc version is 0.181.2
 
 <img src="https://img.shields.io/npm/v/@builder/swc.svg" alt="npm package" />
 <img src="https://img.shields.io/npm/dm/@builder/swc.svg" alt="npm downloads" />
@@ -12,9 +12,14 @@ Custom swc for [ice.js](https://github.com/alibaba/ice) and [rax-app](https://gi
 ### Platform Support
 
 - Windows x64
+- Windows aarch64
+- Window ia32
 - macOS x64
 - macOS aarch64
 - Linux aarch64 gnu
+- Linux aarch64 musl
+- Linux x64 gnu
+- Linux x64 musl
 
 ### API
 
@@ -44,8 +49,9 @@ Transform the variables which exported by `universal-env` to bool. The output co
 ```js
 import { transformSync } from '@builder/swc';
 
+// Case 1: import specifier
 // Input
-const input = `
+var input = `
 import { isWeb, isWeex } from 'universal-env';
 
 if (isWeb) {
@@ -55,7 +61,7 @@ if (isWeb) {
 }
 `;
 
-const { code, map } = transformSync(input, {
+var { code, map } = transformSync(input, {
   jsc: {
     parser: {
       syntax: "ecmascript",
@@ -65,6 +71,7 @@ const { code, map } = transformSync(input, {
   keepPlatform: 'web',
 });
 
+console.log(code);
 /* The output code is:
 var isWeb = true;
 var isWeex = false;
@@ -75,7 +82,41 @@ if (isWeb) {
   console.log('This is weex code');
 }
 */
+
+// Case 2: import namespace specifier
+// Input
+var input = `
+import * as env from 'universal-env';
+
+if (env.isWeb) {
+  console.log('This is web code');
+} else {
+  console.log('This is weex code');
+}
+`;
+
+var { code, map } = transformSync(input, {
+  jsc: {
+    parser: {
+      syntax: "ecmascript",
+    },
+    transform: {},
+  },
+  keepPlatform: 'web',
+});
+
 console.log(code);
+/* The output code is:
+var env = {
+  isWeb: true
+};
+
+if (env.isWeb) {
+  console.log('This is web code');
+} else {
+  console.log('This is weex code');
+}
+*/
 ```
 
 #### transform(code: string, options)

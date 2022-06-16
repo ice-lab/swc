@@ -1,8 +1,9 @@
 # 忽略目录
 lib/
 build/
-tests/
 node_modules/
+tests/
+__tests__/
 
 # node 覆盖率文件
 coverage/

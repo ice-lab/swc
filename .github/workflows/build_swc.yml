@@ -1,101 +1,185 @@
 on:
   push:
     branches:
-      - 'swc/*'
+      - 'swc\/*'
 
 name: Build @builder/swc native binaries
 
 jobs:
   test-native:
     name: Unit Test Native Code
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          check-latest: true
+      - uses: actions/checkout@v3
       - name: Install
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly-2021-11-05
+          toolchain: nightly-2022-02-23
           profile: minimal
       - run: cd . && cargo test
-
+      
+  # Build binaries for publishing
   build-native:
     strategy:
+      fail-fast: false
       matrix:
-        os: [ubuntu-18.04, macos-latest, windows-latest]
-        description: [default]
-        include:
-          - os: ubuntu-18.04
-            target: x86_64-unknown-linux-gnu
-            name: linux-x64-gnu
-          - os: windows-latest
-            target: x86_64-pc-windows-msvc
-            name: win32-x64-msvc
-          - os: macos-latest
-            target: x86_64-apple-darwin
-            name: darwin-x64
-          - os: macos-latest
-            target: aarch64-apple-darwin
-            name: darwin-arm64
-            description: m1
-
-    name: builder-swc - ${{ matrix.os }} - ${{ matrix.target }} - node@12
-    runs-on: ${{ matrix.os }}
-
+        settings:
+          - host: macos-latest
+            target: 'x86_64-apple-darwin'
+            build: |
+              yarn global add @napi-rs/cli@2 &&
+              yarn run build:swc &&
+              strip -x ./native/builder-swc.darwin-x64.node
+          - host: windows-latest
+            build: |
+              yarn global add @napi-rs/cli@2 &&
+              yarn run build:swc
+            target: 'x86_64-pc-windows-msvc'
+          - host: windows-latest
+            build: |
+              yarn global add @napi-rs/cli@2 &&
+              yarn run build:swc --target i686-pc-windows-msvc
+            target: 'i686-pc-windows-msvc'
+          - host: ubuntu-latest
+            target: 'x86_64-unknown-linux-gnu'
+            docker: ghcr.io/napi-rs/napi-rs/nodejs-rust:lts-debian
+            # Node.js in Baidu need to compatible with `GLIBC_2.12`
+            build: >-
+              rustup toolchain install $(cat ./rust-toolchain) &&
+              rustup target add x86_64-unknown-linux-gnu &&
+              yarn global add @napi-rs/cli@2 &&
+              yarn run build:swc --target x86_64-unknown-linux-gnu &&
+              llvm-strip -x ./native/builder-swc.linux-x64-gnu.node
+          - host: ubuntu-latest
+            target: 'x86_64-unknown-linux-musl'
+            docker: ghcr.io/napi-rs/napi-rs/nodejs-rust:lts-debian
+            build: >-
+              rustup toolchain install $(cat ./rust-toolchain) &&
+              rustup target add x86_64-unknown-linux-musl &&
+              yarn global add @napi-rs/cli@2 &&
+              yarn run build:swc --target x86_64-unknown-linux-musl &&
+              strip -x ./native/builder-swc.linux-x64-musl.node
+          - host: macos-latest
+            target: 'aarch64-apple-darwin'
+            build: |
+              sudo rm -Rf /Library/Developer/CommandLineTools/SDKs/*;
+              export CC=$(xcrun -f clang);
+              export CXX=$(xcrun -f clang++);
+              SYSROOT=$(xcrun --sdk macosx --show-sdk-path);
+              export CFLAGS="-isysroot $SYSROOT -isystem $SYSROOT";
+              yarn global add @napi-rs/cli@2 &&
+              yarn run build:swc --target aarch64-apple-darwin &&
+              strip -x ./native/builder-swc.darwin-arm64.node
+          - host: ubuntu-latest
+            target: 'aarch64-unknown-linux-gnu'
+            docker: ghcr.io/napi-rs/napi-rs/nodejs-rust:lts-debian-aarch64
+            build: >-
+              rustup toolchain install $(cat ./rust-toolchain) &&
+              rustup target add aarch64-unknown-linux-gnu &&
+              yarn global add @napi-rs/cli@2 &&
+              yarn run build:swc --target aarch64-unknown-linux-gnu &&
+              llvm-strip -x ./native/builder-swc.linux-arm64-gnu.node
+          - host: ubuntu-latest
+            target: 'aarch64-unknown-linux-musl'
+            docker: ghcr.io/napi-rs/napi-rs/nodejs-rust:lts-alpine
+            build: >-
+              rustup toolchain install $(cat ./rust-toolchain) &&
+              rustup target add aarch64-unknown-linux-musl &&
+              yarn global add @napi-rs/cli@2 &&
+              yarn run build:swc --target aarch64-unknown-linux-musl &&
+              llvm-strip -x ./native/builder-swc.linux-arm64-musl.node
+          - host: windows-latest
+            target: 'aarch64-pc-windows-msvc'
+            build: |
+              yarn global add @napi-rs/cli@2 &&
+              yarn run build:swc --target aarch64-pc-windows-msvc
+    name: stable - ${{ matrix.settings.target }} - node@16
+    runs-on: ${{ matrix.settings.host }}
     steps:
-      - uses: actions/checkout@v2
+      # https://github.com/actions/virtual-environments/issues/1187
+      - name: tune linux network
+        run: sudo ethtool -K eth0 tx off rx off
+        if: ${{ matrix.settings.host == 'ubuntu-18.04' }}
+      - name: tune linux network
+        run: sudo ethtool -K eth0 tx off rx off
+        if: ${{ matrix.settings.host == 'ubuntu-latest' }}
+      - name: tune windows network
+        run: Disable-NetAdapterChecksumOffload -Name * -TcpIPv4 -UdpIPv4 -TcpIPv6 -UdpIPv6
+        if: ${{ matrix.settings.host == 'windows-latest' }}
+      - name: tune mac network
+        run: sudo sysctl -w net.link.generic.system.hwcksum_tx=0 && sudo sysctl -w net.link.generic.system.hwcksum_rx=0
+        if: ${{ matrix.settings.host == 'macos-latest' }}
+      # we use checkout here instead of the build cache since
+      # it can fail to restore in different OS'
+      - uses: actions/checkout@v3
+      # We use restore-key to pick latest cache.
+      # We will not get exact match, but doc says
+      # "If there are multiple partial matches for a restore key, the action returns the most recently created cache."
+      # So we get latest cache
+      - name: Cache built files
+        uses: actions/cache@v3
+        with:
+          path: ./target
+          key: builder-swc-cargo-cache-${{ matrix.settings.target }}--${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            builder-swc-cargo-cache-${{ matrix.settings.target }}
       - name: Setup node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
+        if: ${{ !matrix.settings.docker }}
         with:
           node-version: 12
           check-latest: true
-      - run: npm run setup
+          cache: yarn
+
       - name: Install
         uses: actions-rs/toolchain@v1
+        if: ${{ !matrix.settings.docker }}
         with:
           profile: minimal
-          toolchain: nightly-2021-11-05
-          target: ${{ matrix.target }}
+          override: true
+          target: ${{ matrix.settings.target }}
+
       - name: Cache cargo registry
-        uses: actions/cache@v1
+        uses: actions/cache@v3
         with:
           path: ~/.cargo/registry
-          key: stable-${{ matrix.os }}-node@14-cargo-registry-trimmed-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ matrix.settings.target }}-cargo-registry
+
       - name: Cache cargo index
-        uses: actions/cache@v1
+        uses: actions/cache@v3
         with:
           path: ~/.cargo/git
-          key: stable-${{ matrix.os }}-node@14-cargo-index-trimmed-${{ hashFiles('**/Cargo.lock') }}
-      - name: Cache native binary
-        id: binary-cache
-        uses: actions/cache@v2
+          key: ${{ matrix.settings.target }}-cargo-index
+
+      - name: Setup toolchain
+        run: ${{ matrix.settings.setup }}
+        if: ${{ matrix.settings.setup }}
+        shell: bash
+
+      - name: Build in docker
+        uses: addnab/docker-run-action@v3
+        if: ${{ matrix.settings.docker }}
         with:
-          path: ./native/**
-          key: builder-swc-nightly-2021-08-12-${{ matrix.target }}-${{ hashFiles('.github/workflows/build_native.yml', './') }}
-      - name: Cross build aarch64 setup
-        if: ${{ matrix.target == 'aarch64-apple-darwin' }}
-        run: |
-          sudo rm -rf /Library/Developer/CommandLineTools/SDKs/*;
-          export CC=$(xcrun -f clang);
-          export CXX=$(xcrun -f clang++);
-          SYSROOT=$(xcrun --sdk macosx --show-sdk-path);
-          export CFLAGS="-isysroot $SYSROOT -isystem $SYSROOT";
-          rustup target install aarch64-apple-darwin;
+          image: ${{ matrix.settings.docker }}
+          options: -v ${{ env.HOME }}/.cargo/git:/root/.cargo/git -v ${{ env.HOME }}/.cargo/registry:/root/.cargo/registry -v ${{ github.workspace }}:/build -w /build
+          run: ${{ matrix.settings.build }}
+
       - name: 'Build'
-        if: steps.binary-cache.outputs.cache-hit != true
-        run: yarn build:swc --target ${{ matrix.target }}
-        env:
-          MACOSX_DEPLOYMENT_TARGET: '10.13'
-        working-directory: ./
+        run: ${{ matrix.settings.build }}
+        if: ${{ !matrix.settings.docker }}
+        shell: bash
+
       - name: Upload artifact
-        uses: actions/upload-artifact@v2.2.4
+        uses: actions/upload-artifact@v3
         with:
           name: builder-swc-binaries
-          path: ./native/builder-swc.${{ matrix.name }}.node
-      - name: Clear the cargo caches
-        run: |
-          cargo install cargo-cache --no-default-features --features ci-autoclean
-          cargo-cache
+          path: ./native/builder-swc.*.node
   commit:
     needs: build-native
     runs-on: ubuntu-18.04
