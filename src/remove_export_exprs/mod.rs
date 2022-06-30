@@ -109,19 +109,37 @@ impl Fold for Analyzer<'_> {
     }
 
     fn fold_export_decl(&mut self, s: ExportDecl) -> ExportDecl {
-        if let Decl::Var(d) = &s.decl {
-            if d.decls.is_empty() {
-                return s;
-            }
+        let old_in_data = self.in_data_fn;
 
-            if let Pat::Ident(id) = &d.decls[0].name {
-                if !self.state.remove_exports.contains(&String::from(&*id.id.sym)) {
-                    self.add_ref(id.to_id());
+        match &s.decl {
+            Decl::Fn(f) => {
+                if let Ok(should_remove_identifier) = self.state.should_remove_identifier(&f.ident) {
+                    if should_remove_identifier {
+                        self.in_data_fn = true;
+                        self.add_ref(f.ident.to_id());
+                    }
                 }
             }
+
+            Decl::Var(d) => {    
+                if d.decls.is_empty() {
+                    return s;
+                }
+                if let Pat::Ident(id) = &d.decls[0].name {
+                    if self.state.remove_exports.contains(&String::from(&*id.id.sym)) {
+                        self.in_data_fn = true;
+                        self.add_ref(id.to_id());
+                    }
+                }
+            }
+            _ => {}
         }
 
-        s.fold_children_with(self)
+        let e = s.fold_children_with(self);
+
+        self.in_data_fn = old_in_data;
+
+        return e;
     }
 
     fn fold_expr(&mut self, e: Expr) -> Expr {
@@ -156,27 +174,12 @@ impl Fold for Analyzer<'_> {
     }
 
     fn fold_fn_decl(&mut self, f: FnDecl) -> FnDecl {
-        let old_in_data = self.in_data_fn;
-
-        self.state.cur_declaring.insert(f.ident.to_id());
-
-        if let Ok(should_remove_identifier) = self.state.should_remove_identifier(&f.ident) {
-            self.in_data_fn |= should_remove_identifier;
-        } else {
-            return f;
-        }
-        tracing::trace!(
-            "remove_export_exprs: Handling `{}{:?}`; in_data_fn = {:?}",
-            f.ident.sym,
-            f.ident.span.ctxt,
-            self.in_data_fn
-        );
 
         let f = f.fold_children_with(self);
 
-        self.state.cur_declaring.remove(&f.ident.to_id());
-
-        self.in_data_fn = old_in_data;
+        if self.in_data_fn {
+            self.add_ref(f.ident.to_id());
+        }
 
         f
     }
@@ -260,16 +263,8 @@ impl Fold for Analyzer<'_> {
     }
 
     fn fold_var_declarator(&mut self, mut v: VarDeclarator) -> VarDeclarator {
-        let old_in_data = self.in_data_fn;
-
         if let Pat::Ident(name) = &v.name {
-            if let Ok(should_remove_identifier) = self.state.should_remove_identifier(&name.id) {
-                if should_remove_identifier {
-                    self.in_data_fn = true;
-                }
-            } else {
-                return v;
-            }
+            self.add_ref(name.to_id());
         }
 
         let old_in_lhs_of_var = self.in_lhs_of_var;
@@ -281,9 +276,6 @@ impl Fold for Analyzer<'_> {
         v.init = v.init.fold_with(self);
 
         self.in_lhs_of_var = old_in_lhs_of_var;
-
-        self.in_data_fn = old_in_data;
-
         v
     }
 }

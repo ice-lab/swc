@@ -422,3 +422,96 @@ fn remove_export_exprs_preserve_default_destructuring_assignment_array_fixture(i
         &output,
     );
 }
+
+#[fixture("tests/fixture/remove_export_exprs/removeData/base/input.js")]
+fn remove_export_exprs_remove_data_base_fixture(input: PathBuf) {
+    let output = input.parent().unwrap().join("output.js");
+    test_fixture(
+        unminify_syntax(),
+        &|tr| {
+            let top_level_mark = Mark::fresh(Mark::root());
+            let jsx = jsx::<SingleThreadedComments>(
+                tr.cm.clone(),
+                None,
+                swc_ecmascript::transforms::react::Options {
+                    next: false.into(),
+                    runtime: None,
+                    import_source: Some("".into()),
+                    pragma: Some("__jsx".into()),
+                    pragma_frag: Some("__jsxFrag".into()),
+                    throw_if_namespace: false.into(),
+                    development: false.into(),
+                    use_builtins: false.into(),
+                    use_spread: true.into(),
+                    refresh: Default::default(),
+                },
+                top_level_mark,
+            );
+            chain!(remove_export_exprs(vec!["getData".to_string()]), jsx)
+        },
+        &input,
+        &output,
+    );
+}
+
+#[fixture("tests/fixture/remove_export_exprs/removeData/normalFnExp/input.js")]
+fn remove_export_exprs_remove_data_normal_fn_exp_fixture(input: PathBuf) {
+    let output = input.parent().unwrap().join("output.js");
+    test_fixture(
+        unminify_syntax(),
+        &|tr| {
+            let top_level_mark = Mark::fresh(Mark::root());
+            let jsx = jsx::<SingleThreadedComments>(
+                tr.cm.clone(),
+                None,
+                swc_ecmascript::transforms::react::Options {
+                    next: false.into(),
+                    runtime: None,
+                    import_source: Some("".into()),
+                    pragma: Some("__jsx".into()),
+                    pragma_frag: Some("__jsxFrag".into()),
+                    throw_if_namespace: false.into(),
+                    development: false.into(),
+                    use_builtins: false.into(),
+                    use_spread: true.into(),
+                    refresh: Default::default(),
+                },
+                top_level_mark,
+            );
+            chain!(remove_export_exprs(vec!["getData".to_string()]), jsx)
+        },
+        &input,
+        &output,
+    );
+}
+
+#[fixture("tests/fixture/remove_export_exprs/removeData/varDeclExport/input.js")]
+fn remove_export_exprs_remove_data_var_decl_export_fixture(input: PathBuf) {
+    let output = input.parent().unwrap().join("output.js");
+    test_fixture(
+        unminify_syntax(),
+        &|tr| {
+            let top_level_mark = Mark::fresh(Mark::root());
+            let jsx = jsx::<SingleThreadedComments>(
+                tr.cm.clone(),
+                None,
+                swc_ecmascript::transforms::react::Options {
+                    next: false.into(),
+                    runtime: None,
+                    import_source: Some("".into()),
+                    pragma: Some("__jsx".into()),
+                    pragma_frag: Some("__jsxFrag".into()),
+                    throw_if_namespace: false.into(),
+                    development: false.into(),
+                    use_builtins: false.into(),
+                    use_spread: true.into(),
+                    refresh: Default::default(),
+                },
+                top_level_mark,
+            );
+            chain!(remove_export_exprs(vec!["getData".to_string()]), jsx)
+        },
+        &input,
+        &output,
+    );
+}
