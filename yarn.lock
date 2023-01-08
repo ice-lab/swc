@@ -435,6 +435,51 @@
   resolved "https://registry.npmjs.org/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
+"@builder/swc-darwin-arm64@0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@builder/swc-darwin-arm64/-/swc-darwin-arm64-0.2.0.tgz#686a3dbaf134e81fb87c7ea66377c05e0781bc29"
+  integrity sha512-+nmnScnq40eMKqCLpVwl7P/JCHrzm9q1ECvD/nGTNATweMB0hhTjX7V/5DfHELl1RHGnw7NchAuVJDesNa9daw==
+
+"@builder/swc-darwin-x64@0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@builder/swc-darwin-x64/-/swc-darwin-x64-0.2.0.tgz#a4d490902e1a2c65c5a0e40e1d2974fd72a03405"
+  integrity sha512-vR9H+o5WmrasoAgMmL9HA2DfUosreGt0Pak54iOIyu3V6hSXaLxKuSidqEMcWBG1nN2wEYBvlzP8s04WusqPRQ==
+
+"@builder/swc-linux-arm64-gnu@0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@builder/swc-linux-arm64-gnu/-/swc-linux-arm64-gnu-0.2.0.tgz#52a61ec107303fce1bf3dab6367dd2be1d9d6a61"
+  integrity sha512-O18+aSQ7ZGcBwongjsatQ7OcJo9D0YDsBujPkQfQ0sBwnxmzGTw4kkXHr/K9Bou9wcy8TEpXRfaauaLHzzecAA==
+
+"@builder/swc-linux-arm64-musl@0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@builder/swc-linux-arm64-musl/-/swc-linux-arm64-musl-0.2.0.tgz#b1233b6088335a9bb8cc1cee102b303f9758b25b"
+  integrity sha512-0vkGpqmJNOfsWh7qb3Mqga0gJPsAomxPitWapRlFQ736Q0qHL4Bb270/VZO3xcjA0zZKaN8VdwVw+Pxqg3ziQA==
+
+"@builder/swc-linux-x64-gnu@0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@builder/swc-linux-x64-gnu/-/swc-linux-x64-gnu-0.2.0.tgz#044eb2ecf8ce9a466b002bd2513d4841331fd6a6"
+  integrity sha512-6gPaiwQq1l/eeNthOBvWInHU5i2bfbnGuw4YDsTF2pHhbHd7eR++N5viTROJLjFaZevWrNUbfMc47IMRGQg7WA==
+
+"@builder/swc-linux-x64-musl@0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@builder/swc-linux-x64-musl/-/swc-linux-x64-musl-0.2.0.tgz#d9cf082cb869544bd1e71bc7f591c6a557e529b1"
+  integrity sha512-01zpp3sHM48x1Tl1fzM6si1E6ZIooJkXts+vPu36v265gXEb1winhFHCXXtQXvSHZ/XEyRFD1BcgdCm3goSJRw==
+
+"@builder/swc-win32-arm64-msvc@0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@builder/swc-win32-arm64-msvc/-/swc-win32-arm64-msvc-0.2.0.tgz#0f2b8f59cc4ccfb61322add35896d5656d5cfeb7"
+  integrity sha512-+06kFldeVV1Yzy2tfkeClwsglW50j6qG2vpTA3Tqwp5kEAGFNT1tUwsoWcbySJSCRlGBAVHDZxJlsUMqSK34Yw==
+
+"@builder/swc-win32-ia32-msvc@0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@builder/swc-win32-ia32-msvc/-/swc-win32-ia32-msvc-0.2.0.tgz#b6c4e53b72c7262d64ea505bd74836b5e734cc5a"
+  integrity sha512-wc9GA1YWv5ZxVYl73KDdRuX3All8reNIUbtPEKz2LwQ5locUX6gb7pdDzDz0et/xXjshZRGka7wDU2wzgi8Giw==
+
+"@builder/swc-win32-x64-msvc@0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@builder/swc-win32-x64-msvc/-/swc-win32-x64-msvc-0.2.0.tgz#a046ea79442ab1e64536c4f56ab6d7be49bebac1"
+  integrity sha512-l8eMGTigKHrA46HAkXWblYwxQeT/SEe9yKrIYi2kfngWHNUALUFlPnnoJOSmLCGwPRZTHUgcx45Ta+15ahj5DQ==
+
 "@commitlint/cli@^11.0.0":
   version "11.0.0"
   resolved "https://registry.npmjs.org/@commitlint/cli/-/cli-11.0.0.tgz#698199bc52afed50aa28169237758fa14a67b5d3"
@@ -3341,9 +3386,9 @@ json5@2.x, json5@^2.2.1:
   integrity sha512-1hqLFMSrGHRHxav9q9gNjJ5EXznIxGVO09xQRrwplcS8qs28pZ8s8hupZAmqDwZUmVZ2Qb2jnyPOWcDH8m8dlA==
 
 json5@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.npmjs.org/json5/-/json5-1.0.1.tgz#779fb0018604fa854eacbf6252180d83543e3dbe"
-  integrity sha512-aKS4WQjPenRxiQsC93MNfjx+nbF4PAdYzmd/1JIj8HYzqfbu86beTuNgXDzPknWk0n0uARlyewZo4s++ES36Ow==
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/json5/-/json5-1.0.2.tgz#63d98d60f21b313b77c4d6da18bfa69d80e1d593"
+  integrity sha512-g1MWMLBiz8FKi1e4w0UyVL3w+iJceWAFBAaBnnGKOpNa5f8TLktkbre1+s6oICydWAm+HRUGTmI+//xv2hvXYA==
   dependencies:
     minimist "^1.2.0"
 
@@ -3584,9 +3629,9 @@ minimist-options@4.1.0:
     kind-of "^6.0.3"
 
 minimist@^1.2.0, minimist@^1.2.6:
-  version "1.2.6"
-  resolved "https://registry.npmjs.org/minimist/-/minimist-1.2.6.tgz#8637a5b759ea0d6e98702cfb3a9283323c93af44"
-  integrity sha512-Jsjnk4bw3YJqYzbdyBiNsPWHPfO++UGG749Cxs6peCu5Xg4nrena6OVxOYxrQTqww0Jmwt+Ref8rggumkTLz9Q==
+  version "1.2.7"
+  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.7.tgz#daa1c4d91f507390437c6a8bc01078e7000c4d18"
+  integrity sha512-bzfL1YUZsP41gmu/qjrEk0Q6i2ix/cVeAhbCbqH9u3zYutS1cLg00qhrD0M2MVdCcx4Sc0UpP2eBWo9rotpq6g==
 
 minipass@^3.0.0:
   version "3.1.6"
